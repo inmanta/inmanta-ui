@@ -1,0 +1,12 @@
+git+https://github.com/inmanta/inmanta.git
+pep8-naming
+flake8
+flake8-black
+isort
+flake8-isort
+black
+tox
+tox-venv
+pytest
+pytest-randomly
+pytest-asyncio
