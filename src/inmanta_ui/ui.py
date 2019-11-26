@@ -16,12 +16,17 @@
     Contact: code@inmanta.com
 """
 
-from typing import List
+from typing import List, cast
 
-from inmanta.protocol.decorators import method
-from inmanta.server import SLICE_TRANSPORT, protocol
-from inmanta.server.protocol import Server, ServerSlice
+from inmanta.protocol import method
+from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
+from inmanta.server import config as opt
+from inmanta.server import protocol
+from inmanta.server.protocol import ServerSlice
+from inmanta.server.server import Server
 from inmanta.types import Apireturn
+
+from .config import web_console_enabled, web_console_path
 
 
 @method(path="/hello-world", operation="GET", client_types=["api"])
@@ -35,7 +40,9 @@ class UISlice(ServerSlice):
     def __init__(self) -> None:
         super().__init__("inmanta_ui.ui")
 
-    async def prestart(self, server: Server) -> None:
+    async def prestart(self, server: protocol.Server) -> None:
+        _server = cast(Server, server.get_slice(SLICE_SERVER))
+        self.add_web_console_handler(_server)
         await super(UISlice, self).prestart(server)
 
     async def start(self) -> None:
@@ -60,3 +67,23 @@ class UISlice(ServerSlice):
             Handle for the hello_world API endpoint.
         """
         return 200, {"data": "hello-world"}
+
+    def add_web_console_handler(self, server: Server) -> None:
+        if not web_console_enabled.get():
+            return
+
+        path = web_console_path.get()
+        if path is None:
+            return
+
+        if opt.server_enable_auth.get():
+            auth = f"""
+        window.auth = {{
+            'realm': '{opt.dash_realm.get()}',
+            'url': '{opt.dash_auth_url.get()}',
+            'clientId': '{opt.dash_client_id.get()}'
+        }};"""  # Use the same client-id as the dashboard
+        else:
+            auth = ""
+        server.add_static_content("/web-console/config.js", content=auth)
+        server.add_static_handler("/web-console", path, start=True)
