@@ -18,6 +18,8 @@
 
 from typing import List, cast
 
+from tornado import routing, web
+
 from inmanta.protocol import method
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
@@ -86,4 +88,12 @@ class UISlice(ServerSlice):
         else:
             auth = ""
         server.add_static_content("/web-console/config.js", content=auth)
-        server.add_static_handler("/web-console", path, start=True)
+        location = "/web-console/"
+        options = {"path": path, "default_filename": "index.html"}
+        server._handlers.append(routing.Rule(routing.PathMatches(r"%s(?!lsm)(.*)" % location), web.StaticFileHandler, options))
+        server._handlers.append(
+            routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
+        )
+        server._handlers.append(
+            routing.Rule(routing.PathMatches(r"%slsm(.*)" % location), web.RedirectHandler, {"url": location})
+        )

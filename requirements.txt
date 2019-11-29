@@ -1,3 +1,4 @@
+tornado
 git+https://github.com/inmanta/inmanta.git
 pep8-naming
 flake8
