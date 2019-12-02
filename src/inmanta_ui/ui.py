@@ -15,25 +15,18 @@
 
     Contact: code@inmanta.com
 """
-
+import os
 from typing import List, cast
 
-from inmanta.protocol import method
+from tornado import routing, web
+
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
 from inmanta.server import protocol
 from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
-from inmanta.types import Apireturn
 
 from .config import web_console_enabled, web_console_path
-
-
-@method(path="/hello-world", operation="GET", client_types=["api"])
-def hello_world():
-    """
-        Basic hello-world API endpoint.
-    """
 
 
 class UISlice(ServerSlice):
@@ -61,13 +54,6 @@ class UISlice(ServerSlice):
         # Ensure we are started before the HTTP endpoint becomes available
         return [SLICE_TRANSPORT]
 
-    @protocol.handle(hello_world)
-    async def hello_world_handle(self) -> Apireturn:
-        """
-            Handle for the hello_world API endpoint.
-        """
-        return 200, {"data": "hello-world"}
-
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
             return
@@ -86,4 +72,22 @@ class UISlice(ServerSlice):
         else:
             auth = ""
         server.add_static_content("/web-console/config.js", content=auth)
-        server.add_static_handler("/web-console", path, start=True)
+        location = "/web-console/"
+        options = {"path": path, "default_filename": "index.html"}
+        server._handlers.append(routing.Rule(routing.PathMatches(r"%s(?!lsm)(.*)" % location), web.StaticFileHandler, options))
+        server._handlers.append(
+            routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
+        )
+        server._handlers.append(
+            routing.Rule(
+                routing.PathMatches(r"%slsm(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
+            )
+        )
+
+
+class SingleFileHandler(web.StaticFileHandler):
+    """ Always serves the single file given in the path option, useful for single page applications with client-side routing"""
+
+    @classmethod
+    def get_absolute_path(cls, root, path):
+        return web.StaticFileHandler.get_absolute_path(root, "")
