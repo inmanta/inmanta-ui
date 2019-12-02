@@ -20,22 +20,13 @@ from typing import List, cast
 
 from tornado import routing, web
 
-from inmanta.protocol import method
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
 from inmanta.server import protocol
 from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
-from inmanta.types import Apireturn
 
 from .config import web_console_enabled, web_console_path
-
-
-@method(path="/hello-world", operation="GET", client_types=["api"])
-def hello_world():
-    """
-        Basic hello-world API endpoint.
-    """
 
 
 class UISlice(ServerSlice):
@@ -62,13 +53,6 @@ class UISlice(ServerSlice):
     def get_depended_by(self) -> List[str]:
         # Ensure we are started before the HTTP endpoint becomes available
         return [SLICE_TRANSPORT]
-
-    @protocol.handle(hello_world)
-    async def hello_world_handle(self) -> Apireturn:
-        """
-            Handle for the hello_world API endpoint.
-        """
-        return 200, {"data": "hello-world"}
 
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
