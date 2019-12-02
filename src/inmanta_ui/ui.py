@@ -15,7 +15,7 @@
 
     Contact: code@inmanta.com
 """
-
+import os
 from typing import List, cast
 
 from tornado import routing, web
@@ -95,5 +95,15 @@ class UISlice(ServerSlice):
             routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
         )
         server._handlers.append(
-            routing.Rule(routing.PathMatches(r"%slsm(.*)" % location), web.RedirectHandler, {"url": location})
+            routing.Rule(
+                routing.PathMatches(r"%slsm(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
+            )
         )
+
+
+class SingleFileHandler(web.StaticFileHandler):
+    """ Always serves the single file given in the path option, useful for single page applications with client-side routing"""
+
+    @classmethod
+    def get_absolute_path(cls, root, path):
+        return web.StaticFileHandler.get_absolute_path(root, "")
