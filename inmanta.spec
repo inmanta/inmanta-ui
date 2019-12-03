@@ -9,6 +9,7 @@
 %define _debuginfo_subpackages 0
 %define _enable_debug_packages 0
 %define debug_package %{nil}
+%define github_token $github_token
 
 %define sourceversion %{version}%{?buildid}
 
