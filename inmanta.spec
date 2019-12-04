@@ -73,7 +73,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc docs/* LICENSE
+%doc LICENSE
 /opt/inmanta/lib/
 /usr/share/inmanta/web-console
 
