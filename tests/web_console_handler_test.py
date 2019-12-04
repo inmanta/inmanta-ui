@@ -23,7 +23,7 @@ from inmanta.server import config
 
 @pytest.mark.asyncio
 async def test_web_console_handler(server, inmanta_ui_config):
-    base_url = f"http://127.0.0.1:{config.get_bind_port()}/web-console"
+    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console"
     client = AsyncHTTPClient()
     response = await client.fetch(base_url)
     assert response.code == 200
