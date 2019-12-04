@@ -1,7 +1,6 @@
 # Use release 0 for prerelease version.
 %define release 1
 %define version 2019.5
-%define web_console_version $web_console_version
 %define venv inmanta-venv
 %define _p3 %{venv}/bin/python3
 %define _unique_build_ids 0
@@ -9,7 +8,6 @@
 %define _debuginfo_subpackages 0
 %define _enable_debug_packages 0
 %define debug_package %{nil}
-%define github_token $github_token
 
 %define sourceversion %{version}%{?buildid}
 
