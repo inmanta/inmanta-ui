@@ -1,7 +1,7 @@
 # Use release 0 for prerelease version.
 %define release 1
 %define version 2019.5
-%define webconsole_version 0.0.5
+%define web_console_version $web_console_version
 %define venv inmanta-venv
 %define _p3 %{venv}/bin/python3
 %define _unique_build_ids 0
@@ -43,7 +43,7 @@ Requires:  python3-inmanta
 
 # Download the package from github npm repository
 npm set //npm.pkg.github.com/:_authToken %{github_token}
-npm pack @inmanta/web-console@%{webconsole_version} --registry=https://npm.pkg.github.com
+npm pack @inmanta/web-console@%{web_console_version} --registry=https://npm.pkg.github.com
 
 %build
 
@@ -68,7 +68,7 @@ cp -r inmanta-venv/lib/ %{buildroot}/opt/inmanta/
 
 # Install web-console
 mkdir -p %{buildroot}/usr/share/inmanta/web-console
-tar -xf inmanta-web-console-%{webconsole_version}.tgz --strip-components=2 --directory %{buildroot}/usr/share/inmanta/web-console
+tar -xf inmanta-web-console-%{web_console_version}.tgz --strip-components=2 --directory %{buildroot}/usr/share/inmanta/web-console
 
 %clean
 rm -rf %{buildroot}
