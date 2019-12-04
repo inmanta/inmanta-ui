@@ -1,6 +1,6 @@
 # Use release 0 for prerelease version.
 %define release 1
-%define version 2019.5
+%define version 1.0.0
 %define venv inmanta-venv
 %define _p3 %{venv}/bin/python3
 %define _unique_build_ids 0
@@ -88,4 +88,3 @@ rm -rf %{buildroot}
 %changelog
 * Tue Dec 03 2019 Andras Kovari <andras.kovari@inmanta.com> - 0.1
 - Initial release
-
