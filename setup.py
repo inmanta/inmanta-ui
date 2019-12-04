@@ -4,7 +4,7 @@ requires = [
     "inmanta",
 ]
 
-namespace_packages = ["inmanta_ext.inmanta_ui"]
+namespace_packages = ["inmanta_ext.ui"]
 
 setup(
     version="1.0",

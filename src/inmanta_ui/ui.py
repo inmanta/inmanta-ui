@@ -25,13 +25,14 @@ from inmanta.server import config as opt
 from inmanta.server import protocol
 from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
+from inmanta_ui.const import SLICE_UI
 
 from .config import web_console_enabled, web_console_path
 
 
 class UISlice(ServerSlice):
     def __init__(self) -> None:
-        super().__init__("inmanta_ui.ui")
+        super().__init__(SLICE_UI)
 
     async def prestart(self, server: protocol.Server) -> None:
         _server = cast(Server, server.get_slice(SLICE_SERVER))
@@ -71,8 +72,8 @@ class UISlice(ServerSlice):
         }};"""  # Use the same client-id as the dashboard
         else:
             auth = ""
-        server.add_static_content("/web-console/config.js", content=auth)
-        location = "/web-console/"
+        server.add_static_content("/console/config.js", content=auth)
+        location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(routing.Rule(routing.PathMatches(r"%s(?!lsm)(.*)" % location), web.StaticFileHandler, options))
         server._handlers.append(
