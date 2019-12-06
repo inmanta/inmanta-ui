@@ -12,6 +12,10 @@ pipeline {
     skipDefaultCheckout()
   }
 
+  environment {
+    PIP_INDEX_URL='https://artifacts.internal.inmanta.com/inmanta/dev'
+  }
+
   stages {
     stage('clear workspace and checkout source code') {
       steps {
