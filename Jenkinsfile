@@ -63,7 +63,7 @@ pipeline {
     }
     stage("Publish") {
       when {
-        expression { env.BRANCH_NAME == 'master' }
+        expression { env.BRANCH_NAME == 'issue/12-publish-artifact-to-devpi' }
       }
       steps {
         withCredentials([usernamePassword(credentialsId: 'devpi-user', passwordVariable: 'DEVPI_PASS', usernameVariable: 'DEVPI_USER')]) {
