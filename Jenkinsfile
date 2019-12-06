@@ -50,6 +50,34 @@ pipeline {
         sh "${WORKSPACE}/env/bin/python -m tox -c inmanta-ui"
       }
     }
+    stage("Package") {
+      steps {
+        sh '''
+          pushd inmanta-ui
+          rm -f dist/*
+          ${WORKSPACE}/env/bin/pip3 install wheel
+          ${WORKSPACE}/env/bin/python3 setup.py egg_info -Db ".dev$(date +'%Y%m%d%H%M' --utc)" sdist bdist_wheel
+          popd
+        '''
+      }
+    }
+    stage("Publish") {
+      when {
+        expression { env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'devpi-user', passwordVariable: 'DEVPI_PASS', usernameVariable: 'DEVPI_USER')]) {
+          sh '''
+            /opt/devpi-client/venv/bin/devpi use ${PIP_INDEX_URL}
+            /opt/devpi-client/venv/bin/devpi login ${DEVPI_USER} --password=${DEVPI_PASS}
+
+            # upload packages
+            /opt/devpi-client/venv/bin/devpi upload inmanta-ui/dist/*
+            /opt/devpi-client/venv/bin/devpi logoff
+          '''
+        }
+      }
+    }
   }
   post {
     always{
