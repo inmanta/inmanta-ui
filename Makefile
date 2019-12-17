@@ -3,6 +3,32 @@
 isort = isort -rc src tests
 black = black src tests
 
+VERSION := $(shell python3 setup.py -V)
+RPMDIR := "$(shell pwd)/rpms"
+
+ifndef $(RELEASE)
+RELEASE := dev
+endif
+
+ifndef $(BUILDID)
+   ifneq ("$(RELEASE)","stable")
+BUILDID := .dev$(shell date --utc +%Y%m%d%H%M)
+   endif
+endif
+
+ifeq ($(RELEASE), dev)
+ISO_REPO := inmanta-service-orchestrator-3-dev
+REPOMANAGER_REPO := inmanta-service-orchestrator-dev/3
+endif
+ifeq ($(RELEASE), next)
+ISO_REPO := inmanta-service-orchestrator-3-next
+REPOMANAGER_REPO := inmanta-service-orchestrator-next/3
+endif
+ifeq ($(RELEASE), stable)
+ISO_REPO := inmanta-service-orchestrator-3
+REPOMANAGER_REPO := inmanta-service-orchestrator/3
+endif
+
 .PHONY: install
 install:
 	pip install -U setuptools pip
@@ -56,6 +82,55 @@ clean:
 	rm -rf *.egg-info
 	rm -f .coverage
 	rm -f .coverage.*
-	rm -rf build
+	rm -rf build dist *.egg-info rpms
 	find -name .env | xargs rm -rf
 	python setup.py clean
+
+.PHONY: ensure-valid-release-type
+ensure-valid-release-type:
+ifneq ($(RELEASE), dev)
+  ifneq ($(RELEASE), next)
+    ifneq ($(RELEASE), stable)
+    $(error RELEASE parameter should have value 'dev', 'next' or 'stable')
+    endif
+  endif
+endif
+
+.PHONY: build
+build: ensure-valid-release-type
+	python3 setup.py egg_info -Db "$(BUILDID)" sdist
+
+.PHONY: collect-dependencies
+collect-dependencies: ensure-valid-release-type
+	mkdir -p dist
+	export PIP_INDEX_URL="https://artifacts.internal.inmanta.com/inmanta/$(RELEASE)"; python3 -m irt.main package-dependencies --package-dir . --constraint-file ./requirements.txt --destination "dist/deps-${VERSION}$(BUILDID).tar.gz"
+	# Download npm package from github packages
+	npm config set @inmanta:registry https://npm.pkg.github.com
+	npm config set //npm.pkg.github.com/:_authToken ${GITHUB_TOKEN}
+	cd dist; npm pack @inmanta/web-console@$(WEB_CONSOLE_VERSION)
+
+.PHONY: rpm
+rpm: ensure-valid-release-type build collect-dependencies
+	rm -rf ${RPMDIR}
+	sed -i '0,/^%define version.*/s/^%define version.*/%define version ${VERSION}/' inmanta.spec
+
+ifneq ($(BUILDID),)
+	sed -i '0,/^%define buildid.*/s/^%define buildid.*/%define buildid $(BUILDID)/' inmanta.spec
+else
+	sed -i '0,/^%define buildid.*/s/^%define buildid.*/%define buildid %{nil}/' inmanta.spec
+endif
+
+ifneq ("$(RELEASE)","stable")
+	sed -i '0,/^%define release.*/s/^%define release.*/%define release 0/' inmanta.spec
+endif
+
+	mock -r inmanta-and-epel-7-x86_64 --bootstrap-chroot --enablerepo="inmanta-oss-$(RELEASE),$(ISO_REPO)" --define="web_console_version $(WEB_CONSOLE_VERSION)" --buildsrpm --spec inmanta.spec --sources dist --resultdir ${RPMDIR}
+	mock -r inmanta-and-epel-7-x86_64 --bootstrap-chroot --enablerepo="inmanta-oss-$(RELEASE),$(ISO_REPO)" --define="web_console_version $(WEB_CONSOLE_VERSION)" --rebuild ${RPMDIR}/python3-inmanta-ui-${VERSION}-*.src.rpm --resultdir ${RPMDIR}
+
+.PHONY: upload
+upload: RPM := $(shell basename ${RPMDIR}/python3-inmanta-ui-${VERSION}-*.x86_64.rpm)
+
+.PHONY: upload
+upload: ensure-valid-release-type
+	@echo Uploading $(RPM)
+	ssh repomanager@jenkins.ii.inmanta.com "/usr/bin/repomanager --config /etc/repomanager.toml --repo $(REPOMANAGER_REPO) --distro el7 --file - --file-name ${RPM}" < ${RPMDIR}/${RPM}

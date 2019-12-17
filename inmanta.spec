@@ -1,8 +1,10 @@
 # Use release 0 for prerelease version.
 %define release 1
 %define version 1.0.0
+%define buildid %{nil}
 %define venv inmanta-venv
 %define _p3 %{venv}/bin/python3
+%define site_packages_dir %{venv}/lib/python3.6/site-packages
 %define _unique_build_ids 0
 %define _debugsource_packages 0
 %define _debuginfo_subpackages 0
@@ -22,6 +24,7 @@ License:        EULA
 URL:            http://inmanta.com
 Source0:        inmanta-ui-%{sourceversion}.tar.gz
 Source1:        deps-%{sourceversion}.tar.gz
+Source2:        inmanta-web-console-%{web_console_version}.tgz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python3-inmanta
@@ -39,34 +42,38 @@ Requires:  python3-inmanta
 %setup -q -n inmanta-ui-%{sourceversion}
 %setup -T -D -a 1 -n inmanta-ui-%{sourceversion}
 
-# Download the package from github npm repository
-npm set //npm.pkg.github.com/:_authToken %{github_token}
-npm pack @inmanta/web-console@%{web_console_version} --registry=https://npm.pkg.github.com
-
 %build
 
 %install
 # Copy the inmanta venv to BUILD directory to work around ownership issue
-cp -r --no-preserve=ownership /opt/inmanta inmanta-venv
+cp -r --no-preserve=ownership /opt/inmanta %{venv}
 chmod -x LICENSE
 
 # Save packages installed by python3-inmanta
-files=$(find inmanta-venv/lib/python3.6/site-packages/ -maxdepth 1 -mindepth 1 ! -path inmanta-venv/lib/python3.6/site-packages/inmanta_ext)
+files=$(find %{site_packages_dir} -maxdepth 1 -mindepth 1 ! -path %{site_packages_dir}/inmanta_ext)
 
 # Install inmanta-ui
-%{_p3} -m pip install --no-index --find-links deps-%{sourceversion} inmanta-ui
+%{_p3} -m pip install --pre --no-index --find-links dependencies .
 
 # Only keep new packages
 rm -rf ${files}
 # Remove inmanta_ext/core separately, to retain inmanta_ext/ui
-rm -rf inmanta-venv/lib/python3.6/site-packages/inmanta_ext/core
+find "%{site_packages_dir}/inmanta_ext" -maxdepth 1 -mindepth 1 ! -path "%{site_packages_dir}/inmanta_ext/ui" |xargs rm -rf
+
+# Byte-compile source code
+packages_to_bytecompile=("inmanta_ui" "inmanta_ext")
+for p in "${packages_to_bytecompile[@]}"; do
+   find "%{site_packages_dir}/${p}" -name '*.py' |xargs -I file_name python3.6 -c 'import py_compile; py_compile.compile(file="file_name", cfile="file_namec", doraise=True)'
+   find "%{site_packages_dir}/${p}" -name '*.py' |xargs rm -f
+   find "%{site_packages_dir}/${p}" -name '__pycache__' |xargs rm -rf
+done
 
 mkdir -p %{buildroot}/opt/inmanta/
-cp -r inmanta-venv/lib/ %{buildroot}/opt/inmanta/
+cp -r %{venv}/lib/ %{buildroot}/opt/inmanta/
 
 # Install web-console
 mkdir -p %{buildroot}/usr/share/inmanta/web-console
-tar -xf inmanta-web-console-%{web_console_version}.tgz --strip-components=2 --directory %{buildroot}/usr/share/inmanta/web-console
+tar -xf %{SOURCE2} --strip-components=2 --directory %{buildroot}/usr/share/inmanta/web-console
 
 %clean
 rm -rf %{buildroot}
