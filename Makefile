@@ -98,7 +98,18 @@ endif
 
 .PHONY: build
 build: ensure-valid-release-type
-	python3 setup.py egg_info -Db "$(BUILDID)" sdist
+	rm -rf dist/*
+	pip3 install -U wheel
+	python3 setup.py egg_info -Db "$(BUILDID)" sdist bdist_wheel
+
+.PHONY: upload-python-package
+upload-python-package: build
+	pip install -U devpi-client
+	devpi use https://artifacts.internal.inmanta.com/inmanta/$(RELEASE)
+	devpi login ${DEVPI_USER} --password=${DEVPI_PASS}
+	# upload packages
+	devpi upload dist/*
+	devpi logoff
 
 .PHONY: collect-dependencies
 collect-dependencies: ensure-valid-release-type
