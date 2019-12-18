@@ -10,9 +10,12 @@ ifndef $(RELEASE)
 RELEASE := dev
 endif
 
-ifndef $(BUILDID)
-   ifneq ("$(RELEASE)","stable")
+ifeq ($(BUILDID),)
+   ifeq ("$(RELEASE)","dev")
 BUILDID := .dev$(shell date --utc +%Y%m%d%H%M)
+   endif
+   ifeq ("$(RELEASE)","next")
+BUILDID := .next$(shell date --utc +%Y%m%d%H%M)
    endif
 endif
 
