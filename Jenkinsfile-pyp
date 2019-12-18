@@ -1,3 +1,4 @@
+// Publish inmanta-ui as a Python package to the internal devpi repository
 pipeline {
   agent any
 
