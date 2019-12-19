@@ -4,6 +4,7 @@ pipeline {
 
   parameters {
     choice(name: 'release_type', choices: ['dev', 'next', 'stable'], description: 'Indicate whether a dev, next or stable release should be build.')
+    booleanParam(name: 'upload', defaultValue: false, description: 'Upload the Python package to devpi.')
   }
 
   options {
@@ -14,6 +15,10 @@ pipeline {
 
   stages {
     stage('Clear workspace and checkout source code') {
+      when {
+        // Skip this stage during initial trigger by Jenkins
+        expression { env.release_type != null }
+      }
       steps {
         deleteDir()
         dir('inmanta-ui') {
@@ -22,6 +27,10 @@ pipeline {
       }
     }
     stage("Setup virtualenv"){
+      when {
+        // Skip this stage during initial trigger by Jenkins
+        expression { env.release_type != null }
+      }
       steps{
         sh '''
           # Setup venv
@@ -30,6 +39,10 @@ pipeline {
       }
     }
     stage("Publish") {
+      when {
+        // Skip this stage during initial trigger by Jenkins
+        allOf { expression { env.release_type != null } ; expression { "${upload}" == "true" } }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'devpi-user', passwordVariable: 'DEVPI_PASS', usernameVariable: 'DEVPI_USER')]) {
           sh '''
