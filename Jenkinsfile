@@ -1,3 +1,4 @@
+// Run the integration tests. When the master branch is used, a dev build is published to the internal devpi repository.
 pipeline {
   agent any
 
@@ -57,11 +58,8 @@ pipeline {
     stage("Package") {
       steps {
         sh '''
-          pushd inmanta-ui
-          rm -f dist/*
-          ${WORKSPACE}/env/bin/pip3 install wheel
-          ${WORKSPACE}/env/bin/python3 setup.py egg_info -Db ".dev$(date +'%Y%m%d%H%M' --utc)" sdist bdist_wheel
-          popd
+          source "${WORKSPACE}/env/bin/activate"
+          make -C inmanta-ui build
         '''
       }
     }
@@ -72,12 +70,8 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'devpi-user', passwordVariable: 'DEVPI_PASS', usernameVariable: 'DEVPI_USER')]) {
           sh '''
-            /opt/devpi-client/venv/bin/devpi use ${PIP_INDEX_URL}
-            /opt/devpi-client/venv/bin/devpi login ${DEVPI_USER} --password=${DEVPI_PASS}
-
-            # upload packages
-            /opt/devpi-client/venv/bin/devpi upload inmanta-ui/dist/*
-            /opt/devpi-client/venv/bin/devpi logoff
+            source "${WORKSPACE}/env/bin/activate"
+            make -C inmanta-ui upload-python-package
           '''
         }
       }
