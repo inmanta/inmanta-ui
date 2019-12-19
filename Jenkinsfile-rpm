@@ -1,3 +1,4 @@
+// This pipeline builds and publishes an RPM for inmanta-ui
 def send_slack_notification() {
     def color_map = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
     slackSend color: color_map[currentBuild.currentResult],

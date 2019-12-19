@@ -1,4 +1,4 @@
-// Publish inmanta-ui as a Python package to the internal devpi repository
+// Publish inmanta-ui as a python package to the internal devpi repository. This pipeline can build dev, next and stable releases.
 pipeline {
   agent any
 

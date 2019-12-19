@@ -1,3 +1,4 @@
+// Run the integration tests. When the master branch is used, a dev build is published to the internal devpi repository.
 pipeline {
   agent any
 
