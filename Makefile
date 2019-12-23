@@ -105,6 +105,14 @@ build: ensure-valid-release-type
 	pip3 install -U wheel
 	python3 setup.py egg_info -Db "$(BUILDID)" sdist bdist_wheel
 
+.PHONY: set-web-console-version
+set-web-console-version:
+ifeq ($(WEB_CONSOLE_VERSION),)
+	npm config set @inmanta:registry https://npm.pkg.github.com
+	npm config set //npm.pkg.github.com/:_authToken ${GITHUB_TOKEN}
+	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".latest'))
+endif
+
 .PHONY: upload-python-package
 upload-python-package: build
 	pip install -U devpi-client
@@ -115,7 +123,7 @@ upload-python-package: build
 	devpi logoff
 
 .PHONY: collect-dependencies
-collect-dependencies: ensure-valid-release-type
+collect-dependencies: ensure-valid-release-type set-web-console-version
 	mkdir -p dist
 	export PIP_INDEX_URL="https://artifacts.internal.inmanta.com/inmanta/$(RELEASE)"; python3 -m irt.main package-dependencies --package-dir . --constraint-file ./requirements.txt --destination "dist/deps-${VERSION}$(BUILDID).tar.gz"
 	# Download npm package from github packages
@@ -124,7 +132,7 @@ collect-dependencies: ensure-valid-release-type
 	cd dist; npm pack @inmanta/web-console@$(WEB_CONSOLE_VERSION)
 
 .PHONY: rpm
-rpm: ensure-valid-release-type build collect-dependencies
+rpm: ensure-valid-release-type set-web-console-version build collect-dependencies
 	rm -rf ${RPMDIR}
 	sed -i '0,/^%define version.*/s/^%define version.*/%define version ${VERSION}/' inmanta.spec
 
