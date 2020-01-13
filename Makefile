@@ -110,7 +110,11 @@ set-web-console-version:
 ifeq ($(WEB_CONSOLE_VERSION),)
 	npm config set @inmanta:registry https://npm.pkg.github.com
 	npm config set //npm.pkg.github.com/:_authToken ${GITHUB_TOKEN}
+  ifeq ($(RELEASE),stable)
 	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".latest'))
+  else
+	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".$(RELEASE)'))
+  endif
 endif
 
 .PHONY: upload-python-package
