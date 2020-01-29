@@ -159,4 +159,4 @@ upload: RPM := $(shell basename ${RPMDIR}/python3-inmanta-ui-${VERSION}-*.x86_64
 .PHONY: upload
 upload: ensure-valid-release-type
 	@echo Uploading $(RPM)
-	ssh repomanager@jenkins.ii.inmanta.com "/usr/bin/repomanager --config /etc/repomanager.toml --repo $(REPOMANAGER_REPO) --distro el7 --file - --file-name ${RPM}" < ${RPMDIR}/${RPM}
+	ssh repomanager@artifacts.ii.inmanta.com "/usr/bin/repomanager --config /etc/repomanager.toml --repo $(REPOMANAGER_REPO) --distro el7 --file - --file-name ${RPM}" < ${RPMDIR}/${RPM}
