@@ -11,11 +11,14 @@ RELEASE := dev
 endif
 
 ifeq ($(BUILDID),)
+TIMESTAMP := $(shell date --utc +%Y%m%d%H%M)
    ifeq ("$(RELEASE)","dev")
-BUILDID := .dev$(shell date --utc +%Y%m%d%H%M)
+BUILDID := .dev$(TIMESTAMP)
+BUILDID_EGG := .dev$(TIMESTAMP)
    endif
    ifeq ("$(RELEASE)","next")
-BUILDID := .next$(shell date --utc +%Y%m%d%H%M)
+BUILDID := .next$(TIMESTAMP)
+BUILDID_EGG := .rc$(TIMESTAMP)
    endif
 endif
 
@@ -103,7 +106,7 @@ endif
 build: ensure-valid-release-type
 	rm -rf dist/*
 	pip3 install -U wheel
-	python3 setup.py egg_info -Db "$(BUILDID)" sdist bdist_wheel
+	python3 setup.py egg_info -Db "$(BUILDID_EGG)" sdist bdist_wheel
 
 .PHONY: set-web-console-version
 set-web-console-version:
@@ -142,8 +145,10 @@ rpm: ensure-valid-release-type set-web-console-version build collect-dependencie
 
 ifneq ($(BUILDID),)
 	sed -i '0,/^%define buildid.*/s/^%define buildid.*/%define buildid $(BUILDID)/' inmanta.spec
+	sed -i '0,/^%define buildid_egg.*/s/^%define buildid_egg.*/%define buildid_egg $(BUILDID_EGG)/' inmanta.spec
 else
 	sed -i '0,/^%define buildid.*/s/^%define buildid.*/%define buildid %{nil}/' inmanta.spec
+	sed -i '0,/^%define buildid_egg.*/s/^%define buildid_egg.*/%define buildid_egg %{nil}/' inmanta.spec
 endif
 
 ifneq ("$(RELEASE)","stable")

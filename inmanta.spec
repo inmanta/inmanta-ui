@@ -2,6 +2,7 @@
 %define release 1
 %define version 1.0.0
 %define buildid %{nil}
+%define buildid_egg %{nil}
 %define venv inmanta-venv
 %define _p3 %{venv}/bin/python3
 %define site_packages_dir %{venv}/lib/python3.6/site-packages
@@ -12,6 +13,7 @@
 %define debug_package %{nil}
 
 %define sourceversion %{version}%{?buildid}
+%define sourceversion_egg %{version}%{?buildid_egg}
 
 Name:           python3-inmanta-ui
 Version:        %{version}
@@ -22,7 +24,7 @@ Summary:        Inmanta User Interface extension
 Group:          Development/Languages
 License:        EULA
 URL:            http://inmanta.com
-Source0:        inmanta-ui-%{sourceversion}.tar.gz
+Source0:        inmanta-ui-%{sourceversion_egg}.tar.gz
 Source1:        deps-%{sourceversion}.tar.gz
 Source2:        inmanta-web-console-%{web_console_version}.tgz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,8 +41,8 @@ Requires:  python3-inmanta
 %description
 
 %prep
-%setup -q -n inmanta-ui-%{sourceversion}
-%setup -T -D -a 1 -n inmanta-ui-%{sourceversion}
+%setup -q -n inmanta-ui-%{sourceversion_egg}
+%setup -T -D -a 1 -n inmanta-ui-%{sourceversion_egg}
 
 %build
 
