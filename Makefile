@@ -18,7 +18,7 @@ BUILDID_EGG := .dev$(TIMESTAMP)
    endif
    ifeq ("$(RELEASE)","next")
 BUILDID := .next$(TIMESTAMP)
-BUILDID_EGG := .rc$(TIMESTAMP)
+BUILDID_EGG := rc$(TIMESTAMP)
    endif
 endif
 
