@@ -108,11 +108,14 @@ build: ensure-valid-release-type
 	pip3 install -U wheel
 	python3 setup.py egg_info -Db "$(BUILDID_EGG)" sdist bdist_wheel
 
-.PHONY: set-web-console-version
-set-web-console-version:
-ifeq ($(WEB_CONSOLE_VERSION),)
+.PHONY: npm-github-auth
+npm-github-auth:
 	npm config set @inmanta:registry https://npm.pkg.github.com
 	npm config set //npm.pkg.github.com/:_authToken ${GITHUB_TOKEN}
+
+.PHONY: set-web-console-version
+set-web-console-version: npm-github-auth
+ifeq ($(WEB_CONSOLE_VERSION),)
   ifeq ($(RELEASE),stable)
 	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".latest'))
   else
@@ -134,8 +137,6 @@ collect-dependencies: ensure-valid-release-type set-web-console-version
 	mkdir -p dist
 	export PIP_INDEX_URL="https://artifacts.internal.inmanta.com/inmanta/$(RELEASE)"; python3 -m irt.main package-dependencies --package-dir . --constraint-file ./requirements.txt --destination "dist/deps-${VERSION}$(BUILDID).tar.gz"
 	# Download npm package from github packages
-	npm config set @inmanta:registry https://npm.pkg.github.com
-	npm config set //npm.pkg.github.com/:_authToken ${GITHUB_TOKEN}
 	cd dist; npm pack @inmanta/web-console@$(WEB_CONSOLE_VERSION)
 
 .PHONY: rpm
