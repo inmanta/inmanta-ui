@@ -118,12 +118,13 @@ npm-github-auth:
 .PHONY: set-web-console-version
 set-web-console-version: npm-github-auth
 ifeq ($(RELEASE),stable)
-        $(eval WEB_CONSOLE_VERSION := $(shell sed -z "s/^.*$(GET_WEB_CONSOLE_VERSION_REGEX).*$$/\2/" pyproject.toml))
-        $(eval CONTENT_PYPROJECT_TOML_FILE := $(shell cat pyproject.toml))
-        if [ "$(WEB_CONSOLE_VERSION)" == "$(CONTENT_PYPROJECT_TOML_FILE)" ]; then \
-          echo "Cannot get web_console version from pyproject.toml"; \
-          exit 1; \
-        fi
+	$(eval WEB_CONSOLE_VERSION := $(shell sed -z "s/^.*$(GET_WEB_CONSOLE_VERSION_REGEX).*$$/\2/" pyproject.toml))
+	$(eval CONTENT_PYPROJECT_TOML_FILE := $(shell cat pyproject.toml))
+	# When the regex passed to sed doesn't match, it returns the full content of the file.
+	if [ "$(WEB_CONSOLE_VERSION)" == "$(CONTENT_PYPROJECT_TOML_FILE)" ]; then \
+	  echo "Cannot get web_console version from pyproject.toml"; \
+	  exit 1; \
+	fi
 endif
 ifeq ($(WEB_CONSOLE_VERSION),)
 	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".$(RELEASE)'))
