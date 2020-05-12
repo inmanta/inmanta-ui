@@ -16,3 +16,6 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.irt]
+web_console = 'master'

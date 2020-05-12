@@ -3,6 +3,8 @@
 isort = isort -rc src tests
 black = black src tests
 
+GET_WEB_CONSOLE_VERSION_REGEX := \(\[tool.irt\][^\[]*web_console\s*=\s*[\"']\)\([^\"'\n]*\)\([\"']\)
+
 VERSION := $(shell python3 setup.py -V)
 RPMDIR := "$(shell pwd)/rpms"
 
@@ -115,12 +117,23 @@ npm-github-auth:
 
 .PHONY: set-web-console-version
 set-web-console-version: npm-github-auth
+ifeq ($(RELEASE),stable)
+	$(eval WEB_CONSOLE_VERSION := $(shell sed -z "s/^.*$(GET_WEB_CONSOLE_VERSION_REGEX).*$$/\2/" pyproject.toml))
+	$(eval CONTENT_PYPROJECT_TOML_FILE := $(shell cat pyproject.toml))
+	# When the regex passed to sed doesn't match, it returns the full content of the file.
+	if [ "$(WEB_CONSOLE_VERSION)" == "$(CONTENT_PYPROJECT_TOML_FILE)" ]; then \
+	  echo "Cannot get web_console version from pyproject.toml"; \
+	  exit 1; \
+	fi
+endif
 ifeq ($(WEB_CONSOLE_VERSION),)
-  ifeq ($(RELEASE),stable)
-	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".latest'))
-  else
 	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".$(RELEASE)'))
-  endif
+endif
+ifeq ($(RELEASE),next)
+	sed -i -z "s/$(GET_WEB_CONSOLE_VERSION_REGEX)/\1$(WEB_CONSOLE_VERSION)\3/g" pyproject.toml
+	git add pyproject.toml
+	git commit -m "Pin version web console to $(WEB_CONSOLE_VERSION)"
+	git push
 endif
 
 .PHONY: upload-python-package
