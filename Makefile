@@ -133,7 +133,7 @@ ifeq ($(RELEASE),next)
 	$(eval WEB_CONSOLE_VERSION_STABLE_RELEASE := $(shell echo "$(WEB_CONSOLE_VERSION)" |cut -d '-' -f 1))
 	sed -i -z "s/$(GET_WEB_CONSOLE_VERSION_REGEX)/\1$(WEB_CONSOLE_VERSION_STABLE_RELEASE)\3/g" pyproject.toml
 	git add pyproject.toml
-	git commit -m "Pin version web console to $(WEB_CONSOLE_VERSION)"
+	git commit -m "Pin version web console to $(WEB_CONSOLE_VERSION_STABLE_RELEASE)"
 	git push
 endif
 
