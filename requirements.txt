@@ -8,6 +8,6 @@ tox==3.16.1
 tox-venv==0.4.0
 pytest==5.4.3
 pytest-randomly==3.1.0
-pytest-asyncio==0.10.0
+pytest-asyncio==0.14.0
 tornado==6.0.4
 bumpversion==0.5.3
