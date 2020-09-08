@@ -1,1 +1,3 @@
-# Release 1.3.0 (?)
+# Release 1.2.2 (2020-09-08)
+
+* Update dependencies
