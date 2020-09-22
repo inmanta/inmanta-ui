@@ -145,8 +145,10 @@ upload-python-package: build
 	pip install -U devpi-client
 	devpi use https://artifacts.internal.inmanta.com/inmanta/$(RELEASE)
 	devpi login ${DEVPI_USER} --password=${DEVPI_PASS}
-	# upload packages
-	devpi upload dist/*
+	# upload packages only if this version hasn't been upload previously
+	if [ -z "$$(devpi list $$(ls dist/*-py3-*.whl | sed 's/dist\/\(.*\)-\(.*\)-py3-.*\.whl/\1==\2/'))" ]; then \
+		devpi upload dist/*; \
+	fi
 	devpi logoff
 
 .PHONY: collect-dependencies
