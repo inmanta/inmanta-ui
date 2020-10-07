@@ -125,8 +125,7 @@ ifeq ($(RELEASE),stable)
 	  echo "Cannot get web_console version from pyproject.toml"; \
 	  exit 1; \
 	fi
-endif
-ifeq ($(WEB_CONSOLE_VERSION),)
+else ifeq ($(WEB_CONSOLE_VERSION),)
 	$(eval WEB_CONSOLE_VERSION := $(shell npm view @inmanta/web-console --json |jq -r '."dist-tags".$(RELEASE)'))
 endif
 ifeq ($(RELEASE),next)
