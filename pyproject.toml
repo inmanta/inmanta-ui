@@ -18,4 +18,4 @@ exclude = '''
 '''
 
 [tool.irt]
-web_console = 'master'
+web_console = '1.4.0'
