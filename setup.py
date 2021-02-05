@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 requires = [
-    "inmanta",
+    "inmanta-core>=4.1.0.dev",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
