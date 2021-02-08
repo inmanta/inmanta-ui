@@ -13,7 +13,7 @@ RELEASE := dev
 endif
 
 ifeq ($(BUILDID),)
-TIMESTAMP := $(shell date --utc +%Y%m%d%H%M)
+TIMESTAMP := $(shell date --utc +%Y%m%d%H%M%S)
    ifeq ("$(RELEASE)","dev")
 BUILDID := .dev$(TIMESTAMP)
 BUILDID_EGG := .dev$(TIMESTAMP)
