@@ -1,0 +1,5 @@
+# Dependencies on other inmanta components
+inmanta-core
+
+# Dependencies of the code
+tornado==6.1
