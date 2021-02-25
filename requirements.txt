@@ -1,0 +1,6 @@
+# Dependencies on other inmanta components: incompatible with newer inmanta versions that pull in inmanta-core
+# These are constrained here because tox installes the requirements and the project in two phases
+inmanta~=2020.4.0.dev
+
+# Dependencies of the code
+tornado==6.1

@@ -1,3 +1,7 @@
-inmanta-dev-dependencies[pytest,async,extension]==1.21.0
-pytest-inmanta-extensions~=3.0.0
+inmanta-dev-dependencies[pytest,async,extension]==1.23.0
 bumpversion==0.6.0
+
+# Transitive dependency for inmanta-dev-dependencies: incompatible with newer inmanta versions that pull in inmanta-core
+# These are constrained here because tox installes the requirements and the project in two phases
+inmanta~=2020.4.0.dev
+pytest-inmanta-extensions~=3.0.0

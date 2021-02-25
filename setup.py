@@ -1,7 +1,8 @@
 from setuptools import setup, find_packages
 
 requires = [
-    "inmanta",
+    "inmanta~=2020.4.0.dev",
+    "tornado",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
