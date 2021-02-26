@@ -29,11 +29,11 @@ Source1:        deps-%{sourceversion}.tar.gz
 Source2:        inmanta-web-console-%{web_console_version}.tgz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  python3-inmanta
+BuildRequires:  python3-inmanta >= 2020.4.0, python3-inmanta < 2020.5.0
 BuildRequires:  systemd
 BuildRequires:  nodejs
 
-Requires:  python3-inmanta
+Requires:  python3-inmanta >= 2020.4.0, python3-inmanta < 2020.5.0
 
 # Use the correct python for bycompiling
 %define __python %{_p3}
