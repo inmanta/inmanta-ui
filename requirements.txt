@@ -1,9 +1,5 @@
-inmanta-dev-dependencies==1.5.0
-pep8-naming==0.11.1
-pytest-randomly==3.5.0
+# Dependencies on other inmanta components
+inmanta-core
+
+# Dependencies of the code
 tornado==6.1
-bumpversion==0.6.0
-tox==3.20.1
-tox-venv==0.4.0
-pytest-asyncio==0.14.0
-pytest-timeout==1.4.2

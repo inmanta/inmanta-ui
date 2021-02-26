@@ -13,7 +13,7 @@ RELEASE := dev
 endif
 
 ifeq ($(BUILDID),)
-TIMESTAMP := $(shell date --utc +%Y%m%d%H%M)
+TIMESTAMP := $(shell date --utc +%Y%m%d%H%M%S)
    ifeq ("$(RELEASE)","dev")
 BUILDID := .dev$(TIMESTAMP)
 BUILDID_EGG := .dev$(TIMESTAMP)
@@ -51,7 +51,7 @@ format:
 .PHONY: build-pytest-inmanta-extensions
 build-pytest-inmanta-extensions:
 	pip install -c requirements.txt -U setuptools pip
-	git clone https://github.com/inmanta/inmanta.git inmanta-core
+	git clone --branch iso4 https://github.com/inmanta/inmanta.git inmanta-core
 	python3 inmanta-core/tests_common/copy_files_from_core.py
 	cd inmanta-core/tests_common/; python3 setup.py sdist --dist-dir ../../extra_dist
 	rm -rf inmanta-core

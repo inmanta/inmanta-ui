@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
 
 requires = [
-    "inmanta",
+    "inmanta-core~=4.0.dev",
+    "tornado",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
 
 setup(
-    version="1.3.0",
+    version="1.3.1",
     python_requires=">=3.6",  # also update classifiers
     # Meta data
     name="inmanta-ui",
