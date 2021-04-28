@@ -4,3 +4,6 @@ inmanta~=2020.4.0.dev
 
 # Dependencies of the code
 tornado==6.1
+
+# Pin due to bug: https://github.com/pypa/pip/issues/9878
+pip==21.0.1
