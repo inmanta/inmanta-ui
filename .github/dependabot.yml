@@ -5,19 +5,4 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 99
-  ignore:
-  - dependency-name: inmanta-dev-dependencies[async,extension,pytest]
-    versions:
-    - 1.20.0
-    - 1.25.0
-    - 1.26.0
-    - 1.27.0
-    - 1.29.0
-    - 1.30.0
-    - 1.31.0
-    - 1.32.0
-    - 1.33.0
-  - dependency-name: inmanta-dev-dependencies
-    versions:
-    - 1.12.0
-    - 1.13.0
+
