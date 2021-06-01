@@ -1,0 +1,4 @@
+description: Fixed Makefile push target for next branch
+change-type: patch
+destination-branches:
+  - iso3
