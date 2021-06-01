@@ -135,7 +135,7 @@ ifeq ($(RELEASE),next)
 	if [ -n "$$(git ls-files -m pyproject.toml)" ]; then \
 	  git add pyproject.toml; \
 	  git commit -m "Pin version web console to $(WEB_CONSOLE_VERSION_STABLE_RELEASE)"; \
-	  git push origin HEAD:next; \
+	  git push origin HEAD:iso3-next; \
 	fi
 endif
 
