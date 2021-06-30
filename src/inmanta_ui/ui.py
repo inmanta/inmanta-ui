@@ -63,13 +63,19 @@ class UISlice(ServerSlice):
         server.add_static_content("/console/config.js", content=auth)
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
-        server._handlers.append(routing.Rule(routing.PathMatches(r"%s(?!lsm)(.*)" % location), web.StaticFileHandler, options))
+        server._handlers.append(
+            routing.Rule(
+                routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location),
+                web.StaticFileHandler,
+                options,
+            )
+        )
         server._handlers.append(
             routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
         )
         server._handlers.append(
             routing.Rule(
-                routing.PathMatches(r"%slsm(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
+                routing.PathMatches(r"%s(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
             )
         )
 
