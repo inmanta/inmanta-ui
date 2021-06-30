@@ -66,7 +66,7 @@ class UISlice(ServerSlice):
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(
-                    r"%s(.*(?:\.js|\.map|\.json|\.css|\.ico|\.svg|\.jpg|\.png|\.woff|\.woff2|\.ttf|\.eot|\.htm|\.html))"
+                    r"%s(.*(?:\.js|\.map|\.json|\.css|\.ico|\.svg|\.jpg|\.jpeg|\.png|\.woff|\.woff2|\.ttf|\.eot|\.htm|\.html))"
                     % location
                 ),
                 web.StaticFileHandler,
