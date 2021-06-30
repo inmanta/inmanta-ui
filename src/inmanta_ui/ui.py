@@ -64,14 +64,7 @@ class UISlice(ServerSlice):
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
-            routing.Rule(
-                routing.PathMatches(
-                    r"%s(.*(?:\.js|\.map|\.json|\.css|\.ico|\.svg|\.jpg|\.jpeg|\.png|\.woff|\.woff2|\.ttf|\.eot|\.htm|\.html))"
-                    % location
-                ),
-                web.StaticFileHandler,
-                options,
-            )
+            routing.Rule(routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location), web.StaticFileHandler, options,)
         )
         server._handlers.append(
             routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
