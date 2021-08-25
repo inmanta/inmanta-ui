@@ -66,7 +66,7 @@ class UISlice(ServerSlice):
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location),
-                web.StaticFileHandler,
+                FlatFileHandler,
                 options,
             )
         )
@@ -85,4 +85,15 @@ class SingleFileHandler(web.StaticFileHandler):
 
     @classmethod
     def get_absolute_path(cls, root, path):
+        return web.StaticFileHandler.get_absolute_path(root, "")
+
+
+class FlatFileHandler(web.StaticFileHandler):
+    """ Always serves files from the root folder, useful when using a proxy"""
+
+    @classmethod
+    def get_absolute_path(cls, root, path):
+        parts = os.path.split(path)
+        if parts:
+            return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
