@@ -63,13 +63,19 @@ class UISlice(ServerSlice):
         server.add_static_content("/console/config.js", content=auth)
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
-        server._handlers.append(routing.Rule(routing.PathMatches(r"%s(?!lsm)(.*)" % location), web.StaticFileHandler, options))
+        server._handlers.append(
+            routing.Rule(
+                routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location),
+                FlatFileHandler,
+                options,
+            )
+        )
         server._handlers.append(
             routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
         )
         server._handlers.append(
             routing.Rule(
-                routing.PathMatches(r"%slsm(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
+                routing.PathMatches(r"%s(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
             )
         )
 
@@ -79,4 +85,15 @@ class SingleFileHandler(web.StaticFileHandler):
 
     @classmethod
     def get_absolute_path(cls, root, path):
+        return web.StaticFileHandler.get_absolute_path(root, "")
+
+
+class FlatFileHandler(web.StaticFileHandler):
+    """ Always serves files from the root folder, useful when using a proxy"""
+
+    @classmethod
+    def get_absolute_path(cls, root, path):
+        parts = os.path.split(path)
+        if parts:
+            return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
