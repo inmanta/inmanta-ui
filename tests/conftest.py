@@ -56,9 +56,7 @@ def web_console_path(tmpdir):
 </body>
 </html>"""
         )
-    assets_dir = os.path.join(tmpdir, "assets")
-    os.mkdir(assets_dir)
-    with open(os.path.join(assets_dir, "asset.txt"), "w") as asset_file:
-        asset_file.write("Additional config file")
+    with open(os.path.join(tmpdir, "asset.js"), "w") as asset_file:
+        asset_file.write("// Additional javascript file")
 
     return tmpdir
