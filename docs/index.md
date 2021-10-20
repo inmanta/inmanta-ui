@@ -11,9 +11,12 @@ For security reasons it's always recommended to use the latest version of these 
 
 When configuring a proxy for the web-console, the url should always end in `/console`.  
 The web-console uses the `/console` part as an `anchor`.  
-The application page urls will be stitched onto the right side of the anchor.  
-Whatever is to the left of the anchor is considered to be the proxy.  
-So from an application perspective, the url is constructed as:  
+This anchor is something recognizable in the url that is always present.  
+It is also considered to be the root of the app.  
+So a potential proxy would come before the anchor.  
+And the app pages come after the anchor.  
+If no anchor is present in the url, we know the url is faulty.  
+So from an app perspective, the url has the following structure:  
 (`proxy`) + (`anchor`) + (`application defined urls`)
 
 ### Examples
