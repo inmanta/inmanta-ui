@@ -71,7 +71,7 @@ class UISlice(ServerSlice):
             )
         )
         server._handlers.append(
-            routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location})
+            routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location[1:]})
         )
         server._handlers.append(
             routing.Rule(
