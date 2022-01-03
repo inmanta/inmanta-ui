@@ -1,0 +1,4 @@
+description: The web console should be the new default frontend for ISO and OSS. This means that it should register the handler to redirect / to /console
+issue-nr: 202
+change-type: major
+destination-branches: [master]
