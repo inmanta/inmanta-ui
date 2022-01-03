@@ -5,6 +5,7 @@
 """
 import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
+
 from inmanta.server import config
 
 
