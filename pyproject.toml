@@ -16,3 +16,6 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.irt.publish.python]
+public = true
