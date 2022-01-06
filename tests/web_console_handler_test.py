@@ -4,7 +4,7 @@
     :license: Inmanta EULA
 """
 import pytest
-from tornado.httpclient import AsyncHTTPClient, HTTPClientError
+from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
 from inmanta.server import config
 
@@ -36,3 +36,18 @@ async def test_web_console_handler(server, inmanta_ui_config):
     response = await client.fetch(base_url + "/resources")
     assert response.code == 200
     assert "Should be served by default" in response.body.decode("UTF-8")
+
+
+@pytest.mark.asyncio
+async def test_start_location_redirect(server, inmanta_ui_config):
+    """
+    Ensure that the "start" location will redirect to the web console. (issue #202)
+    """
+    port = config.get_bind_port()
+    response_url = "http://localhost:%s/console/" % (port,)
+    http_client = AsyncHTTPClient()
+    request = HTTPRequest(
+        url="http://localhost:%s/" % (port),
+    )
+    response = await http_client.fetch(request, raise_error=False)
+    assert response.effective_url == response_url
