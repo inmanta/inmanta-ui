@@ -1,0 +1,6 @@
+---
+description: Add a `pytest.ini` file as such that the tests run against PostgreSQL 10 by default
+issue-nr: 3595
+issue-repo: inmanta-core
+change-type: patch
+destination-branches: [iso4]
