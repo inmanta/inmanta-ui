@@ -1,0 +1,4 @@
+description: Diverge branch heads because of inter-component constraints
+change-type: major
+destination-branches:
+  - master
