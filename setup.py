@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 requires = [
-    "inmanta-core~=4.3.2.dev",
+    "inmanta-core~=4.4.0.dev",
     "tornado",
 ]
 
