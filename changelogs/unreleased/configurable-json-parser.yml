@@ -1,0 +1,6 @@
+---
+description: Make the frontend json parser configurable
+issue-nr: 2537
+issue-repo: web-console
+change-type: minor
+destination-branches: [master, iso5]
