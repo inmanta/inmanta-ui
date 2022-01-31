@@ -27,7 +27,7 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import web_console_enabled, web_console_path, web_console_json_parser
+from .config import web_console_enabled, web_console_json_parser, web_console_path
 
 
 class UISlice(ServerSlice):
@@ -71,8 +71,9 @@ class UISlice(ServerSlice):
             'url': '{opt.dash_auth_url.get()}',
             'clientId': '{opt.dash_client_id.get()}'
         }};\n"""  # Use the same client-id as the dashboard
-        if web_console_json_parser.get() == "BigInt":
-            config_js_content += f"window.jsonParserId = '{web_console_json_parser.get()}';\n"
+        json_parser_option = web_console_json_parser.get()
+        if json_parser_option == "BigInt":
+            config_js_content += f"window.jsonParserId = '{json_parser_option}';\n"
 
         server.add_static_content("/console/config.js", content=config_js_content)
         location = "/console/"
