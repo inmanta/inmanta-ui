@@ -1,7 +1,19 @@
 """
-    :copyright: 2019 Inmanta
-    :contact: code@inmanta.com
-    :license: Inmanta EULA
+    Copyright 2022 Inmanta
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Contact: code@inmanta.com
 """
 
 import asyncio
@@ -56,9 +68,7 @@ def web_console_path(tmpdir):
 </body>
 </html>"""
         )
-    assets_dir = os.path.join(tmpdir, "assets")
-    os.mkdir(assets_dir)
-    with open(os.path.join(assets_dir, "asset.txt"), "w") as asset_file:
-        asset_file.write("Additional config file")
+    with open(os.path.join(tmpdir, "asset.js"), "w") as asset_file:
+        asset_file.write("// Additional javascript file")
 
     return tmpdir
