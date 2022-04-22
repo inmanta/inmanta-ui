@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 requires = [
     "inmanta-core>=6.0.0.dev",
-    "tornado",
+    "tornado~=6.0",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
