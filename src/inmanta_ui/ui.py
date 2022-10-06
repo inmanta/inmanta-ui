@@ -80,7 +80,7 @@ class UISlice(ServerSlice):
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
             routing.Rule(
-                routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location),
+                routing.PathMatches(r"%s(.*\.[\w]{2,5}$)" % location),
                 FlatFileHandler,
                 options,
             )
