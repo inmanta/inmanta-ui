@@ -1,0 +1,5 @@
+description: Add INMANTA_RETRY_LIMITED_MULTIPLIER to tox.ini
+issue-nr: 4968
+issue-repo: inmanta-core
+change-type: patch
+destination-branches: [master, iso5, iso4]
