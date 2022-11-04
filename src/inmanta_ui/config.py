@@ -38,3 +38,63 @@ web_console_json_parser = Option(
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
 )
+
+web_ui_console_enabled = Option("web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool, predecessor_option=web_console_enabled,)
+web_ui_console_path = Option(
+    "web-ui",
+    "console_path",
+    "/usr/share/inmanta/web-console",
+    "The path on the local file system where the web-console can be found",
+    is_str,
+    predecessor_option=web_console_path,
+)
+web_ui_console_json_parser = Option(
+    "web-ui",
+    "console_json_parser",
+    "Native",
+    "Whether the web-console should use the 'Native' or the 'BigInt' JSON Parser. "
+    "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
+    is_str,
+    predecessor_option=web_console_json_parser,
+)
+
+#############################
+# Dashboard
+#############################
+
+dash_enable = Option("dashboard", "enabled", True, "Determines whether the server should host the dashboard or not", is_bool)
+
+dash_path = Option(
+    "dashboard",
+    "path",
+    "/usr/share/inmanta/dashboard",
+    "The path on the local file system where the dashboard can be found",
+    is_str,
+)
+
+dash_realm = Option("dashboard", "realm", "inmanta",
+                    "[DEPRECATED USE :inmanta.config:option:`web-ui.realm`] "
+                    "The realm to use for keycloak authentication.", is_str)
+
+dash_auth_url = Option("dashboard", "auth_url", None, "The auth url of the keycloak server to use.", is_str)
+dash_client_id = Option("dashboard", "client_id", None, "The client id configured in keycloak for this application.", is_str)
+
+
+
+
+
+web_ui_dash_enable = Option("web-ui", "dashboard_enabled", True, "Determines whether the server should host the dashboard or not", is_bool, predecessor_option=dash_enable)
+
+web_ui_path = Option(
+    "web-ui",
+    "path",
+    "/usr/share/inmanta/dashboard",
+    "The path on the local file system where the dashboard can be found",
+    is_str,
+    predecessor_option=dash_path)
+
+web_ui_realm = Option("web-ui", "realm", "inmanta",
+                    "The realm to use for keycloak authentication.", is_str, predecessor_option=dash_realm)
+
+web_ui_auth_url = Option("web-ui", "auth_url", None, "The auth url of the keycloak server to use.", is_str, predecessor_option=dash_auth_url)
+web_ui_client_id = Option("web-ui", "client_id", None, "The client id configured in keycloak for this application.", is_str, predecessor_option=dash_client_id)
