@@ -16,11 +16,16 @@
     Contact: code@inmanta.com
 """
 from inmanta.config import Option, is_bool, is_str
+from inmanta.server.config import dash_auth_url, dash_client_id, dash_enable, dash_path, dash_realm
 
-web_console_enabled = Option("web-console", "enabled", True,
-                             "[DEPRECATED] The web-console section is deprecated, please use the web-ui section instead. "
-                             "Whether the server should host the web-console or not",
-                             is_bool)
+web_console_enabled = Option(
+    "web-console",
+    "enabled",
+    True,
+    "[DEPRECATED] The web-console section is deprecated, please use the web-ui section instead. "
+    "Whether the server should host the web-console or not",
+    is_bool,
+)
 web_console_path = Option(
     "web-console",
     "path",
@@ -39,7 +44,14 @@ web_console_json_parser = Option(
     is_str,
 )
 
-web_ui_console_enabled = Option("web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool, predecessor_option=web_console_enabled,)
+web_ui_console_enabled = Option(
+    "web-ui",
+    "console_enabled",
+    True,
+    "Whether the server should host the web-console or not",
+    is_bool,
+    predecessor_option=web_console_enabled,
+)
 web_ui_console_path = Option(
     "web-ui",
     "console_path",
@@ -62,39 +74,47 @@ web_ui_console_json_parser = Option(
 # Dashboard
 #############################
 
-dash_enable = Option("dashboard", "enabled", True, "Determines whether the server should host the dashboard or not", is_bool)
 
-dash_path = Option(
-    "dashboard",
-    "path",
-    "/usr/share/inmanta/dashboard",
-    "The path on the local file system where the dashboard can be found",
-    is_str,
+web_ui_dashboard_enabled = Option(
+    "web-ui",
+    "dashboard_enabled",
+    True,
+    "Determines whether the server should host the dashboard or not",
+    is_bool,
+    predecessor_option=dash_enable,
 )
 
-dash_realm = Option("dashboard", "realm", "inmanta",
-                    "[DEPRECATED USE :inmanta.config:option:`web-ui.realm`] "
-                    "The realm to use for keycloak authentication.", is_str)
-
-dash_auth_url = Option("dashboard", "auth_url", None, "The auth url of the keycloak server to use.", is_str)
-dash_client_id = Option("dashboard", "client_id", None, "The client id configured in keycloak for this application.", is_str)
-
-
-
-
-
-web_ui_dash_enable = Option("web-ui", "dashboard_enabled", True, "Determines whether the server should host the dashboard or not", is_bool, predecessor_option=dash_enable)
-
-web_ui_path = Option(
+web_ui_dashboard_path = Option(
     "web-ui",
-    "path",
+    "dashboard_path",
     "/usr/share/inmanta/dashboard",
     "The path on the local file system where the dashboard can be found",
     is_str,
-    predecessor_option=dash_path)
+    predecessor_option=dash_path,
+)
 
-web_ui_realm = Option("web-ui", "realm", "inmanta",
-                    "The realm to use for keycloak authentication.", is_str, predecessor_option=dash_realm)
+web_ui_dashboard_realm = Option(
+    "web-ui",
+    "dashboard_realm",
+    "inmanta",
+    "The realm to use for keycloak authentication.",
+    is_str,
+    predecessor_option=dash_realm,
+)
 
-web_ui_auth_url = Option("web-ui", "auth_url", None, "The auth url of the keycloak server to use.", is_str, predecessor_option=dash_auth_url)
-web_ui_client_id = Option("web-ui", "client_id", None, "The client id configured in keycloak for this application.", is_str, predecessor_option=dash_client_id)
+web_ui_dashboard_auth_url = Option(
+    "web-ui",
+    "dashboard_auth_url",
+    None,
+    "The auth url of the keycloak server to use.",
+    is_str,
+    predecessor_option=dash_auth_url,
+)
+web_ui_dashboard_client_id = Option(
+    "web-ui",
+    "dashboard_client_id",
+    None,
+    "The client id configured in keycloak for this application.",
+    is_str,
+    predecessor_option=dash_client_id,
+)
