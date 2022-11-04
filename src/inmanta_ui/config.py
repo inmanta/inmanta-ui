@@ -22,14 +22,14 @@ web_console_enabled = Option(
 )
 web_console_path = Option(
     "web-ui",
-    "path",
+    "console_path",
     "/usr/share/inmanta/web-console",
     "The path on the local file system where the web-console can be found",
     is_str,
 )
 web_console_json_parser = Option(
     "web-ui",
-    "json_parser",
+    "console_json_parser",
     "Native",
     "Whether the web-console should use the 'Native' or the 'BigInt' JSON Parser. "
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
@@ -39,6 +39,8 @@ web_console_json_parser = Option(
 # Dashboard
 #############################
 
-dash_realm = Option("web-ui", "realm", "inmanta", "The realm to use for keycloak authentication.", is_str)
-dash_auth_url = Option("web-ui", "auth_url", None, "The auth url of the keycloak server to use.", is_str)
-dash_client_id = Option("web-ui", "client_id", None, "The client id configured in keycloak for this application.", is_str)
+dash_realm = Option("web-ui", "dashboard_realm", "inmanta", "The realm to use for keycloak authentication.", is_str)
+dash_auth_url = Option("web-ui", "dashboard_auth_url", None, "The auth url of the keycloak server to use.", is_str)
+dash_client_id = Option(
+    "web-ui", "dashboard_client_id", None, "The client id configured in keycloak for this application.", is_str
+)
