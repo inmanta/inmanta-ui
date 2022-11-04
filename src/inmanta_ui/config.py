@@ -17,7 +17,9 @@
 """
 from inmanta.config import Option, is_bool, is_str
 
-web_console_enabled = Option("web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool)
+web_console_enabled = Option(
+    "web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool
+)
 web_console_path = Option(
     "web-ui",
     "path",
