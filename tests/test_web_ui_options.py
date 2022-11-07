@@ -22,6 +22,9 @@ from inmanta_ui import config as cfg
 
 
 def test_config_deprecated_sections(caplog):
+    """
+    Check that a deprecation warning is logged using a configuration option from a deprecated section.
+    """
     for (deprecated_option, new_option) in [
         (opt.dash_path, cfg.web_ui_dashboard_path),
         (opt.dash_client_id, cfg.web_ui_dashboard_client_id),
