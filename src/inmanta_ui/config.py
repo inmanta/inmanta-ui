@@ -22,8 +22,7 @@ web_console_enabled = Option(
     "web-console",
     "enabled",
     True,
-    "[DEPRECATED USE :inmanta.config:option:`web-ui.console_enabled`] "
-    "Whether the server should host the web-console or not",
+    "[DEPRECATED USE :inmanta.config:option:`web-ui.console_enabled`] " "Whether the server should host the web-console or not",
     is_bool,
 )
 web_console_path = Option(
