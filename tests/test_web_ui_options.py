@@ -36,8 +36,8 @@ def test_config_deprecated_sections(caplog):
             caplog.clear()
             assert new_option.get() == "22"
             assert (
-                "Config option %s is in deprecated section %s. Use option %s in section %s instead"
-                % (deprecated_option.name, deprecated_option.section, new_option.name, new_option.section)
+                "Config option %s.%s is deprecated. Use %s.%s instead."
+                % (deprecated_option.section, deprecated_option.name, new_option.section, new_option.name)
                 in caplog.text
             )
 
@@ -45,8 +45,8 @@ def test_config_deprecated_sections(caplog):
             caplog.clear()
             assert new_option.get() == "23"
             assert (
-                "Config option %s is in deprecated section %s. Use option %s in section %s instead"
-                % (deprecated_option.name, deprecated_option.section, new_option.name, new_option.section)
+                "Config option %s.%s is deprecated. Use %s.%s instead."
+                % (deprecated_option.section, deprecated_option.name, new_option.section, new_option.name)
                 not in caplog.text
             )
 
@@ -57,7 +57,7 @@ def test_config_deprecated_sections(caplog):
             caplog.clear()
             assert new_option.get() == "24"
             assert (
-                "Config option %s is in deprecated section %s. Use option %s in section %s instead"
-                % (deprecated_option.name, deprecated_option.section, new_option.name, new_option.section)
+                "Config option %s.%s is deprecated. Use %s.%s instead."
+                % (deprecated_option.section, deprecated_option.name, new_option.section, new_option.name)
                 not in caplog.text
             )
