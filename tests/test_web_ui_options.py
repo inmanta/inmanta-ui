@@ -17,8 +17,8 @@
 """
 
 from inmanta.config import Config
-from inmanta.server import config as opt
-from inmanta_ui import config as cfg
+from inmanta.server import config as opt_core
+from inmanta_ui import config as opt_ui
 
 
 def test_config_deprecated_sections(caplog):
@@ -26,10 +26,10 @@ def test_config_deprecated_sections(caplog):
     Check that a deprecation warning is logged using a configuration option from a deprecated section.
     """
     for (deprecated_option, new_option) in [
-        (opt.dash_path, cfg.web_ui_dashboard_path),
-        (opt.dash_client_id, cfg.web_ui_dashboard_client_id),
-        (cfg.web_console_path, cfg.web_ui_console_path),
-        (cfg.web_console_json_parser, cfg.web_ui_console_json_parser),
+        (opt_core.dash_path, opt_ui.web_ui_dashboard_path),
+        (opt_core.dash_client_id, opt_ui.web_ui_dashboard_client_id),
+        (opt_ui.web_console_path, opt_ui.web_ui_console_path),
+        (opt_ui.web_console_json_parser, opt_ui.web_ui_console_json_parser),
     ]:
         with caplog.at_level("WARNING"):
             Config.set(deprecated_option.section, deprecated_option.name, "22")
