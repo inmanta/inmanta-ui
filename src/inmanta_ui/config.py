@@ -18,6 +18,10 @@
 from inmanta.config import Option, is_bool, is_str
 from inmanta.server.config import dash_auth_url, dash_client_id, dash_enable, dash_path, dash_realm
 
+#######################################
+# OLD web-console configuration options
+#######################################
+
 web_console_enabled = Option(
     "web-console",
     "enabled",
@@ -42,6 +46,10 @@ web_console_json_parser = Option(
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
 )
+
+#######################################
+# NEW web-console configuration options
+#######################################
 
 web_ui_console_enabled = Option(
     "web-ui",
