@@ -100,28 +100,28 @@ web_ui_dashboard_path = Option(
     predecessor_option=dash_path,
 )
 
-web_ui_dashboard_realm = Option(
+web_ui_oidc_realm = Option(
     "web-ui",
-    "dashboard_realm",
+    "oidc_realm",
     "inmanta",
-    "The realm to use for keycloak authentication.",
+    "The realm to use for OpenID Connect authentication.",
     is_str,
     predecessor_option=dash_realm,
 )
 
-web_ui_dashboard_auth_url = Option(
+web_ui_oidc_auth_url = Option(
     "web-ui",
-    "dashboard_auth_url",
+    "oidc_auth_url",
     None,
-    "The auth url of the keycloak server to use.",
+    "The auth url of the OpenID Connect server to use.",
     is_str,
     predecessor_option=dash_auth_url,
 )
-web_ui_dashboard_client_id = Option(
+web_ui_oidc_client_id = Option(
     "web-ui",
-    "dashboard_client_id",
+    "oidc_client_id",
     None,
-    "The client id configured in keycloak for this application.",
+    "The OpenID Connect client id configured for this application.",
     is_str,
     predecessor_option=dash_client_id,
 )

@@ -27,7 +27,7 @@ def test_config_deprecated_sections(caplog):
     """
     for (deprecated_option, new_option) in [
         (opt_core.dash_path, opt_ui.web_ui_dashboard_path),
-        (opt_core.dash_client_id, opt_ui.web_ui_dashboard_client_id),
+        (opt_core.dash_client_id, opt_ui.web_ui_oidc_client_id),
         (opt_ui.web_console_path, opt_ui.web_ui_console_path),
         (opt_ui.web_console_json_parser, opt_ui.web_ui_console_json_parser),
     ]:
