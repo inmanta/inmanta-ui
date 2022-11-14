@@ -27,14 +27,7 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import (
-    keycloak_auth_url,
-    keycloak_client_id,
-    keycloak_realm,
-    web_console_enabled,
-    web_console_json_parser,
-    web_console_path,
-)
+from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_json_parser, web_console_path
 
 
 class UISlice(ServerSlice):
@@ -74,9 +67,9 @@ class UISlice(ServerSlice):
         if opt.server_enable_auth.get():
             config_js_content = f"""
         window.auth = {{
-            'realm': '{keycloak_realm.get()}',
-            'url': '{keycloak_auth_url.get()}',
-            'clientId': '{keycloak_client_id.get()}'
+            'realm': '{oidc_realm.get()}',
+            'url': '{oidc_auth_url.get()}',
+            'clientId': '{oidc_client_id.get()}'
         }};\n"""  # Use the same client-id as the dashboard
         json_parser_option = web_console_json_parser.get()
         if json_parser_option == "BigInt":

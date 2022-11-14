@@ -35,12 +35,10 @@ web_console_json_parser = Option(
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
 )
-#############################
-# Keycloak authentication
-#############################
+################################
+# OpenID connect authentication
+################################
 
-keycloak_realm = Option("web-ui", "keycloak_realm", "inmanta", "The realm to use for keycloak authentication.", is_str)
-keycloak_auth_url = Option("web-ui", "keycloak_auth_url", None, "The auth url of the keycloak server to use.", is_str)
-keycloak_client_id = Option(
-    "web-ui", "keycloak_client_id", None, "The client id configured in keycloak for this application.", is_str
-)
+oidc_realm = Option("web-ui", "oidc_realm", "inmanta", "The realm to use for OpenID connect authentication.", is_str)
+oidc_auth_url = Option("web-ui", "oidc_auth_url", None, "The auth url of the OpenID connect server to use.", is_str)
+oidc_client_id = Option("web-ui", "oidc_client_id", None, "The OpenID client id configured for this application.", is_str)
