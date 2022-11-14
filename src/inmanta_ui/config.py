@@ -100,6 +100,10 @@ web_ui_dashboard_path = Option(
     predecessor_option=dash_path,
 )
 
+################################
+# OpenID connect authentication
+################################
+
 web_ui_oidc_realm = Option(
     "web-ui",
     "oidc_realm",
