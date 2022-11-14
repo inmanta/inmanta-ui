@@ -36,9 +36,11 @@ web_console_json_parser = Option(
     is_str,
 )
 ################################
-# OpenID connect authentication
+# OpenID Connect authentication
 ################################
 
-oidc_realm = Option("web-ui", "oidc_realm", "inmanta", "The realm to use for OpenID connect authentication.", is_str)
-oidc_auth_url = Option("web-ui", "oidc_auth_url", None, "The auth url of the OpenID connect server to use.", is_str)
-oidc_client_id = Option("web-ui", "oidc_client_id", None, "The OpenID client id configured for this application.", is_str)
+oidc_realm = Option("web-ui", "oidc_realm", "inmanta", "The realm to use for OpenID Connect authentication.", is_str)
+oidc_auth_url = Option("web-ui", "oidc_auth_url", None, "The auth url of the OpenID Connect server to use.", is_str)
+oidc_client_id = Option(
+    "web-ui", "oidc_client_id", None, "The OpenID Connect client id configured for this application.", is_str
+)
