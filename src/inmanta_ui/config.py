@@ -26,14 +26,14 @@ web_console_enabled = Option(
     "web-console",
     "enabled",
     True,
-    "[DEPRECATED USE :inmanta.config:option:`web-ui.console_enabled`] " "Whether the server should host the web-console or not",
+    "[DEPRECATED USE :inmanta.config:option:`web-ui.console-enabled`] " "Whether the server should host the web-console or not",
     is_bool,
 )
 web_console_path = Option(
     "web-console",
     "path",
     "/usr/share/inmanta/web-console",
-    "[DEPRECATED USE :inmanta.config:option:`web-ui.console_path`] "
+    "[DEPRECATED USE :inmanta.config:option:`web-ui.console-path`] "
     "The path on the local file system where the web-console can be found",
     is_str,
 )
@@ -41,7 +41,7 @@ web_console_json_parser = Option(
     "web-console",
     "json_parser",
     "Native",
-    "[DEPRECATED USE :inmanta.config:option:`web-ui.console_json_parser`] "
+    "[DEPRECATED USE :inmanta.config:option:`web-ui.console-json-parser`] "
     "Whether the web-console should use the 'Native' or the 'BigInt' JSON Parser. "
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
