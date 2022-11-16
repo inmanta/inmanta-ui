@@ -17,19 +17,30 @@
 """
 from inmanta.config import Option, is_bool, is_str
 
-web_console_enabled = Option("web-console", "enabled", True, "Should the server should host the web-console or not", is_bool)
+web_console_enabled = Option(
+    "web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool
+)
 web_console_path = Option(
-    "web-console",
-    "path",
+    "web-ui",
+    "console_path",
     "/usr/share/inmanta/web-console",
     "The path on the local file system where the web-console can be found",
     is_str,
 )
 web_console_json_parser = Option(
-    "web-console",
-    "json_parser",
+    "web-ui",
+    "console_json_parser",
     "Native",
     "Whether the web-console should use the 'Native' or the 'BigInt' JSON Parser. "
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
+)
+################################
+# OpenID Connect authentication
+################################
+
+oidc_realm = Option("web-ui", "oidc_realm", "inmanta", "The realm to use for OpenID Connect authentication.", is_str)
+oidc_auth_url = Option("web-ui", "oidc_auth_url", None, "The auth url of the OpenID Connect server to use.", is_str)
+oidc_client_id = Option(
+    "web-ui", "oidc_client_id", None, "The OpenID Connect client id configured for this application.", is_str
 )
