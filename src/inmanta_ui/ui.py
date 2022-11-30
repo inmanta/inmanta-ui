@@ -27,7 +27,7 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import web_console_enabled, web_console_json_parser, web_console_path
+from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_json_parser, web_console_path
 
 
 class UISlice(ServerSlice):
@@ -67,9 +67,9 @@ class UISlice(ServerSlice):
         if opt.server_enable_auth.get():
             config_js_content = f"""
         window.auth = {{
-            'realm': '{opt.dash_realm.get()}',
-            'url': '{opt.dash_auth_url.get()}',
-            'clientId': '{opt.dash_client_id.get()}'
+            'realm': '{oidc_realm.get()}',
+            'url': '{oidc_auth_url.get()}',
+            'clientId': '{oidc_client_id.get()}'
         }};\n"""  # Use the same client-id as the dashboard
         json_parser_option = web_console_json_parser.get()
         if json_parser_option == "BigInt":
@@ -80,7 +80,7 @@ class UISlice(ServerSlice):
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
             routing.Rule(
-                routing.PathMatches(r"%s(.*\.[^\s]{2,5}$)" % location),
+                routing.PathMatches(r"%s(.*\.\w{2,5}$)" % location),
                 FlatFileHandler,
                 options,
             )
