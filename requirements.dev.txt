@@ -2,4 +2,4 @@ bumpversion==0.6.0
 # Guide pip in finding appropriate versions by using the bound extra for pytest-inmanta-extensions.
 # This way inmanta-core and pytest-inmanta-extensions versions are bound, which should reduce backtracking on the latter.
 inmanta-core[pytest-inmanta-extensions]
-inmanta-dev-dependencies[pytest,async,extension]==2.68.0
+inmanta-dev-dependencies[pytest,async,extension]==2.69.0
