@@ -15,8 +15,8 @@
 
     Contact: code@inmanta.com
 """
-import os
 import logging
+import os
 from typing import List, cast
 
 from tornado import routing, web
@@ -29,7 +29,6 @@ from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
 from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_json_parser, web_console_path
-
 
 LOGGER = logging.getLogger(__name__)
 
