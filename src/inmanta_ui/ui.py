@@ -16,6 +16,7 @@
     Contact: code@inmanta.com
 """
 import os
+import logging
 from typing import List, cast
 
 from tornado import routing, web
@@ -28,6 +29,9 @@ from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
 from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_json_parser, web_console_path
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class UISlice(ServerSlice):
@@ -57,11 +61,13 @@ class UISlice(ServerSlice):
 
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
+            LOGGER.info("The web-console is disabled.")
             return
 
         path = web_console_path.get()
-        if path is None:
-            return
+        if not os.path.isdir(path):
+            raise Exception(f"The web-ui.console_path config option references the non-existing directory {path}.")
+        LOGGER.info("Serving the web-console from %s", path)
 
         config_js_content = ""
         if opt.server_enable_auth.get():
