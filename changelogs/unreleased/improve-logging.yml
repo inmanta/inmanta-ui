@@ -1,0 +1,6 @@
+---
+description: Improve the logging regarding the web-console configuration options.
+change-type: patch
+destination-branches: [master, iso6, iso5]
+sections:
+  minor-improvement: "{{description}}"
