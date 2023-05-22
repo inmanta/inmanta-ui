@@ -88,8 +88,8 @@ class UISlice(ServerSlice):
         if json_parser_option == "BigInt":
             config_js_content += f"window.jsonParserId = '{json_parser_option}';\n"
 
-        features = "'" + "', '".join(opt.web_console_features.get()) + "'"
-        config_js_content += "f\nexport features = [{features}]\n"
+        features = "'" + "', '".join(web_console_features.get()) + "'"
+        config_js_content += f"\nexport features = [{features}];\n"
 
         server.add_static_content("/console/config.js", content=config_js_content)
         location = "/console/"

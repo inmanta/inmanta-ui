@@ -72,4 +72,4 @@ async def test_web_console_config(server, inmanta_ui_config):
     response = await client.fetch(base_url)
     assert response.code == 200
 
-    assert "\nexport features = [" in response.body
+    assert "\nexport features = ['A', 'B', 'C'];" in response.body.decode()
