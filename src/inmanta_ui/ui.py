@@ -28,7 +28,7 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import web_console_enabled, web_console_json_parser, web_console_path
+from .config import web_ui_console_enabled, web_ui_console_json_parser, web_ui_console_path
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,11 +59,11 @@ class UISlice(ServerSlice):
         return [SLICE_TRANSPORT]
 
     def add_web_console_handler(self, server: Server) -> None:
-        if not web_console_enabled.get():
+        if not web_ui_console_enabled.get():
             LOGGER.info("The web-console is disabled.")
             return
 
-        path = web_console_path.get()
+        path = web_ui_console_path.get()
         if not os.path.isdir(path):
             raise Exception(f"The web-ui.console_path config option references the non-existing directory {path}.")
         LOGGER.info("Serving the web-console from %s", path)
@@ -76,7 +76,7 @@ class UISlice(ServerSlice):
             'url': '{opt.dash_auth_url.get()}',
             'clientId': '{opt.dash_client_id.get()}'
         }};\n"""  # Use the same client-id as the dashboard
-        json_parser_option = web_console_json_parser.get()
+        json_parser_option = web_ui_console_json_parser.get()
         if json_parser_option == "BigInt":
             config_js_content += f"window.jsonParserId = '{json_parser_option}';\n"
 
