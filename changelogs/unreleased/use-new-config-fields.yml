@@ -1,0 +1,7 @@
+description: "Use new web-ui options instead of deprecated web-console ones"
+change-type: patch
+sections:
+  bugfix: "{{description}}"
+destination-branches:
+  # iso5 is the only version to have both the deprecated and the new options
+  - iso5
