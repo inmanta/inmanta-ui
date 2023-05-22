@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 def inmanta_ui_config(server_config, postgres_db, database_name, web_console_path):
     config.Config.set("server", "enabled_extensions", "ui")
     config.Config.set("web-ui", "console_path", str(web_console_path))
+    config.Config.set("web-ui", "features", "A, B, C")
 
 
 @pytest.fixture
