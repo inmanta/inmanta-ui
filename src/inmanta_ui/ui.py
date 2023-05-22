@@ -15,6 +15,7 @@
 
     Contact: code@inmanta.com
 """
+import json
 import logging
 import os
 from typing import List, cast
@@ -88,8 +89,7 @@ class UISlice(ServerSlice):
         if json_parser_option == "BigInt":
             config_js_content += f"window.jsonParserId = '{json_parser_option}';\n"
 
-        features = "'" + "', '".join(web_console_features.get()) + "'"
-        config_js_content += f"\nexport features = [{features}];\n"
+        config_js_content += f"\nexport features = {json.dumps(web_console_features.get())};\n"
 
         server.add_static_content("/console/config.js", content=config_js_content)
         location = "/console/"
