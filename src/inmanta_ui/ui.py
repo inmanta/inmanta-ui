@@ -91,7 +91,7 @@ class UISlice(ServerSlice):
 
         config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
 
-        server.add_static_content("/console/(.*)config.js", content=config_js_content)
+        server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
