@@ -15,6 +15,8 @@
 
     Contact: code@inmanta.com
 """
+import json
+import logging
 import os
 from typing import List, cast
 
@@ -27,7 +29,17 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_json_parser, web_console_path
+from .config import (
+    oidc_auth_url,
+    oidc_client_id,
+    oidc_realm,
+    web_console_enabled,
+    web_console_features,
+    web_console_json_parser,
+    web_console_path,
+)
+
+LOGGER = logging.getLogger(__name__)
 
 
 class UISlice(ServerSlice):
@@ -57,11 +69,13 @@ class UISlice(ServerSlice):
 
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
+            LOGGER.info("The web-console is disabled.")
             return
 
         path = web_console_path.get()
-        if path is None:
-            return
+        if not os.path.isdir(path):
+            raise Exception(f"The web-ui.console_path config option references the non-existing directory {path}.")
+        LOGGER.info("Serving the web-console from %s", path)
 
         config_js_content = ""
         if opt.server_enable_auth.get():
@@ -75,7 +89,9 @@ class UISlice(ServerSlice):
         if json_parser_option == "BigInt":
             config_js_content += f"window.jsonParserId = '{json_parser_option}';\n"
 
-        server.add_static_content("/console/config.js", content=config_js_content)
+        config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
+
+        server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(

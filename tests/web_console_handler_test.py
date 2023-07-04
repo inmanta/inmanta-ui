@@ -63,3 +63,21 @@ async def test_start_location_redirect(server, inmanta_ui_config):
     )
     response = await http_client.fetch(request, raise_error=False)
     assert response.effective_url == response_url
+
+
+@pytest.mark.asyncio
+async def test_web_console_config(server, inmanta_ui_config):
+    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console/config.js"
+    client = AsyncHTTPClient()
+    response = await client.fetch(base_url)
+    assert response.code == 200
+
+    assert '\nexport const features = ["A", "B", "C"];' in response.body.decode()
+
+    # test fetching from a deeper path
+    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console/lsm/config.js"
+    client = AsyncHTTPClient()
+    response = await client.fetch(base_url)
+    assert response.code == 200
+
+    assert '\nexport const features = ["A", "B", "C"];' in response.body.decode()

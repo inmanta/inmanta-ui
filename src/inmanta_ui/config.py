@@ -15,7 +15,7 @@
 
     Contact: code@inmanta.com
 """
-from inmanta.config import Option, is_bool, is_str
+from inmanta.config import Option, is_bool, is_list, is_str
 
 web_console_enabled = Option(
     "web-ui", "console_enabled", True, "Whether the server should host the web-console or not", is_bool
@@ -35,6 +35,14 @@ web_console_json_parser = Option(
     "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
     is_str,
 )
+web_console_features = Option(
+    "web-ui",
+    "features",
+    "",
+    "A list of features that should be enabled in the web console.",
+    is_list,
+)
+
 ################################
 # OpenID Connect authentication
 ################################

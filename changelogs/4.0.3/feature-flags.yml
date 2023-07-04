@@ -1,0 +1,4 @@
+---
+description: Add support for feature flags in the web console through the config file
+change-type: patch
+destination-branches: [master, iso6]
