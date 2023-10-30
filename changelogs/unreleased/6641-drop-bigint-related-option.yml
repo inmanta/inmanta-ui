@@ -2,6 +2,6 @@ description: Remove the ``web-ui.console_json_parser``.
 issue-nr: 6641
 issue-repo: inmanta-core
 change-type: minor
-destination-branches: [master]
+destination-branches: [master, iso6]
 sections:
   feature: "{{description}}"
