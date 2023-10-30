@@ -4,4 +4,4 @@ issue-repo: inmanta-core
 change-type: minor
 destination-branches: [master, iso6]
 sections:
-  feature: "{{description}}"
+  deprecation-note: "Removed the `web-ui.console_json_parser` option because it has become redundant."
