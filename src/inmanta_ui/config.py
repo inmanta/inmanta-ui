@@ -27,14 +27,6 @@ web_console_path = Option(
     "The path on the local file system where the web-console can be found",
     is_str,
 )
-web_console_json_parser = Option(
-    "web-ui",
-    "console_json_parser",
-    "Native",
-    "Whether the web-console should use the 'Native' or the 'BigInt' JSON Parser. "
-    "'BigInt' is useful when the web-console has to show very large integers (larger than 2^53 - 1).",
-    is_str,
-)
 web_console_features = Option(
     "web-ui",
     "features",
