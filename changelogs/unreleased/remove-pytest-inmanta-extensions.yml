@@ -1,0 +1,3 @@
+description: remove the inmanta-core[pytest-inmanta-extensions] requirement from requirements.dev.txt
+change-type: patch
+destination-branches: [master, iso6]
