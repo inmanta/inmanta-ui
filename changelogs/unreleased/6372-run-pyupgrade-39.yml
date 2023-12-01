@@ -1,0 +1,7 @@
+description: Run pyupgrade with python3.9
+change-type: patch
+issue-nr: 6372
+issue-repo: inmanta-core
+destination-branches:
+  - master
+  - iso6
