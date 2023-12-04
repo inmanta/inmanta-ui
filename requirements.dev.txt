@@ -1,2 +1,2 @@
 bumpversion==0.6.0
-inmanta-dev-dependencies[pytest,async,extension]==2.94.0
+inmanta-dev-dependencies[pytest,async,extension]==2.95.0
