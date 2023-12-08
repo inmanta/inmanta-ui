@@ -8,7 +8,7 @@ requires = [
 namespace_packages = ["inmanta_ext.ui"]
 
 setup(
-    version="5.1.0",
+    version="5.1.1",
     python_requires=">=3.11",  # also update classifiers
     # Meta data
     name="inmanta-ui",
