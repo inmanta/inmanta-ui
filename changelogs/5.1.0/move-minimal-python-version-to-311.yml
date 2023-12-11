@@ -1,0 +1,6 @@
+description: Move minimal python version to 3.11
+change-type: minor
+issue-repo: inmanta-core
+issue-nr: 6372
+destination-branches:
+  - master
