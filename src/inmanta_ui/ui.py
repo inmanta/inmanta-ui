@@ -41,21 +41,21 @@ class UISlice(ServerSlice):
     async def prestart(self, server: protocol.Server) -> None:
         _server = cast(Server, server.get_slice(SLICE_SERVER))
         self.add_web_console_handler(_server)
-        await super(UISlice, self).prestart(server)
+        await super().prestart(server)
 
     async def start(self) -> None:
-        await super(UISlice, self).start()
+        await super().start()
 
     async def prestop(self) -> None:
-        await super(UISlice, self).prestop()
+        await super().prestop()
 
     async def stop(self) -> None:
-        await super(UISlice, self).stop()
+        await super().stop()
 
-    def get_dependencies(self) -> List[str]:
+    def get_dependencies(self) -> list[str]:
         return []
 
-    def get_depended_by(self) -> List[str]:
+    def get_depended_by(self) -> list[str]:
         # Ensure we are started before the HTTP endpoint becomes available
         return [SLICE_TRANSPORT]
 
