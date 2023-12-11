@@ -18,7 +18,7 @@
 import json
 import logging
 import os
-from typing import List, cast
+from typing import cast
 
 from tornado import routing, web
 
