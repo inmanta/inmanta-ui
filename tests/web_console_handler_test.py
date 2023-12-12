@@ -56,7 +56,7 @@ async def test_start_location_redirect(server, inmanta_ui_config):
     Ensure that the "start" location will redirect to the web console. (issue #202)
     """
     port = config.get_bind_port()
-    response_url = "http://localhost:%s/console/" % (port,)
+    response_url = f"http://localhost:{port}/console/"
     http_client = AsyncHTTPClient()
     request = HTTPRequest(
         url="http://localhost:%s/" % (port),
