@@ -15,6 +15,7 @@
 
     Contact: code@inmanta.com
 """
+
 from inmanta.config import Option, is_bool, is_list, is_str
 
 web_console_enabled = Option(

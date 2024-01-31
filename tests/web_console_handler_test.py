@@ -15,6 +15,7 @@
 
     Contact: code@inmanta.com
 """
+
 import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
