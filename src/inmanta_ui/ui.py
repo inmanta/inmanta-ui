@@ -80,7 +80,7 @@ class UISlice(ServerSlice):
                     'clientId': '{oidc_client_id.get()}'
                 }};\n"""  # Use the same client-id as the dashboard
         else:
-            config_js_content = f"""
+            config_js_content = """
                 window.auth = {{
                     'method': 'database',
                 }};\n"""  # Use the same client-id as the dashboard
