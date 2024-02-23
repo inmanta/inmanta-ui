@@ -86,7 +86,9 @@ class UISlice(ServerSlice):
                         'method': 'database',
                     }};\n"""  # Use the same client-id as the dashboard
             else:
-                raise Exception(f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. Expected either 'oidc' or 'database'.")
+                raise Exception(
+                    f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. Expected either 'oidc' or 'database'."
+                )
 
         config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
 
