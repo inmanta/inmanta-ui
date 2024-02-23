@@ -72,12 +72,24 @@ class UISlice(ServerSlice):
 
         config_js_content = ""
         if opt.server_enable_auth.get():
-            config_js_content = f"""
-        window.auth = {{
-            'realm': '{oidc_realm.get()}',
-            'url': '{oidc_auth_url.get()}',
-            'clientId': '{oidc_client_id.get()}'
-        }};\n"""  # Use the same client-id as the dashboard
+            if opt.server_auth_method.get() == "oidc":
+                config_js_content = f"""
+                    window.auth = {{
+                        'method': 'oidc',
+                        'realm': '{oidc_realm.get()}',
+                        'url': '{oidc_auth_url.get()}',
+                        'clientId': '{oidc_client_id.get()}'
+                    }};\n"""  # Use the same client-id as the dashboard
+            elif opt.server_auth_method.get() == "database":
+                config_js_content = """
+                    window.auth = {{
+                        'method': 'database',
+                    }};\n"""  # Use the same client-id as the dashboard
+            else:
+                raise Exception(
+                    f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
+                    "Expected either 'oidc' or 'database'."
+                )
 
         config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
 
