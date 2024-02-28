@@ -59,7 +59,8 @@ def inmanta_ui_config_with_auth_enabled(inmanta_ui_config):
 @pytest.mark.asyncio
 async def test_auth_enabled(inmanta_ui_config_with_auth_enabled, server):
     """
-    Ensure that the ui extension doesn't crash if auth is enabled and the auth_method is left to its default value.
+    Ensure that the ui extension doesn't crash if server.auth config option is enabled
+    and the server.auth_method is left to its default value.
     """
     base_url = f"http://127.0.0.1:{config.get_bind_port()}/console"
     client = AsyncHTTPClient()
