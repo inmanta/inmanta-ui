@@ -72,7 +72,8 @@ class UISlice(ServerSlice):
 
         config_js_content = ""
         if opt.server_enable_auth.get():
-            if opt.server_auth_method.get() == "oidc":
+            server_auth_method: str = opt.server_auth_method.get()
+            if server_auth_method == "oidc":
                 config_js_content = f"""
                     window.auth = {{
                         'method': 'oidc',
@@ -80,7 +81,7 @@ class UISlice(ServerSlice):
                         'url': '{oidc_auth_url.get()}',
                         'clientId': '{oidc_client_id.get()}'
                     }};\n"""  # Use the same client-id as the dashboard
-            elif opt.server_auth_method.get() == "database":
+            elif server_auth_method == "database":
                 config_js_content = """
                     window.auth = {{
                         'method': 'database',
