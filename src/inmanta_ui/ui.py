@@ -83,9 +83,9 @@ class UISlice(ServerSlice):
                     }};\n"""  # Use the same client-id as the dashboard
             elif server_auth_method == "database":
                 config_js_content = """
-                    window.auth = {{
+                    window.auth = {
                         'method': 'database',
-                    }};\n"""  # Use the same client-id as the dashboard
+                    };\n"""  # Use the same client-id as the dashboard
             else:
                 raise Exception(
                     f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
