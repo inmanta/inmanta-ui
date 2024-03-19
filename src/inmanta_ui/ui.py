@@ -25,9 +25,9 @@ from tornado import routing, web
 
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
-from inmanta.server import protocol
+from inmanta.server import protocol, extensions
 from inmanta.server.protocol import ServerSlice
-from inmanta.server.server import Server, extensions
+from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
 from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_features, web_console_path
