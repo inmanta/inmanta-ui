@@ -25,12 +25,19 @@ from tornado import routing, web
 
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
-from inmanta.server import protocol
+from inmanta.server import extensions, protocol
 from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
 from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_features, web_console_path
+
+composer = extensions.BoolFeature(
+    slice=SLICE_UI,
+    name="smart_composer",
+    description="Enable the smart composer in the web console.",
+)
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,6 +66,9 @@ class UISlice(ServerSlice):
     def get_depended_by(self) -> list[str]:
         # Ensure we are started before the HTTP endpoint becomes available
         return [SLICE_TRANSPORT]
+
+    def define_features(self) -> list[extensions.Feature]:
+        return [composer]
 
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
