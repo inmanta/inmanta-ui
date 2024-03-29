@@ -1,0 +1,4 @@
+---
+description: Use a newer version of inmanta-core that uses a new default value for the server.auth_method config option (oidc instead of None).
+change-type: patch
+destination-branches: [master, iso7]
