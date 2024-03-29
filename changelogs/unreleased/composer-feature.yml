@@ -1,0 +1,6 @@
+change-type: patch
+description: Add a feature for the composer
+destination-branches:
+- master
+- iso7
+sections: {}

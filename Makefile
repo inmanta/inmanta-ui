@@ -1,6 +1,6 @@
 # Shortcuts for various dev tasks. Based on makefile from pydantic
 .DEFAULT_GOAL := all
-isort = isort -rc src tests
+isort = isort src tests
 black = black src tests
 
 GET_WEB_CONSOLE_VERSION_REGEX := \(\[tool.irt\][^\[]*web_console\s*=\s*[\"']\)\([^\"'\n]*\)\([\"']\)

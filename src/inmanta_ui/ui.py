@@ -15,21 +15,29 @@
 
     Contact: code@inmanta.com
 """
+
 import json
 import logging
 import os
-from typing import List, cast
+from typing import cast
 
 from tornado import routing, web
 
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
-from inmanta.server import protocol
+from inmanta.server import extensions, protocol
 from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
 from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_features, web_console_path
+
+composer = extensions.BoolFeature(
+    slice=SLICE_UI,
+    name="smart_composer",
+    description="Enable the smart composer in the web console.",
+)
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,23 +49,26 @@ class UISlice(ServerSlice):
     async def prestart(self, server: protocol.Server) -> None:
         _server = cast(Server, server.get_slice(SLICE_SERVER))
         self.add_web_console_handler(_server)
-        await super(UISlice, self).prestart(server)
+        await super().prestart(server)
 
     async def start(self) -> None:
-        await super(UISlice, self).start()
+        await super().start()
 
     async def prestop(self) -> None:
-        await super(UISlice, self).prestop()
+        await super().prestop()
 
     async def stop(self) -> None:
-        await super(UISlice, self).stop()
+        await super().stop()
 
-    def get_dependencies(self) -> List[str]:
+    def get_dependencies(self) -> list[str]:
         return []
 
-    def get_depended_by(self) -> List[str]:
+    def get_depended_by(self) -> list[str]:
         # Ensure we are started before the HTTP endpoint becomes available
         return [SLICE_TRANSPORT]
+
+    def define_features(self) -> list[extensions.Feature]:
+        return [composer]
 
     def add_web_console_handler(self, server: Server) -> None:
         if not web_console_enabled.get():
@@ -71,12 +82,25 @@ class UISlice(ServerSlice):
 
         config_js_content = ""
         if opt.server_enable_auth.get():
-            config_js_content = f"""
-        window.auth = {{
-            'realm': '{oidc_realm.get()}',
-            'url': '{oidc_auth_url.get()}',
-            'clientId': '{oidc_client_id.get()}'
-        }};\n"""  # Use the same client-id as the dashboard
+            server_auth_method: str = opt.server_auth_method.get()
+            if server_auth_method == "oidc":
+                config_js_content = f"""
+                    window.auth = {{
+                        'method': 'oidc',
+                        'realm': '{oidc_realm.get()}',
+                        'url': '{oidc_auth_url.get()}',
+                        'clientId': '{oidc_client_id.get()}'
+                    }};\n"""  # Use the same client-id as the dashboard
+            elif server_auth_method == "database":
+                config_js_content = """
+                    window.auth = {
+                        'method': 'database',
+                    };\n"""  # Use the same client-id as the dashboard
+            else:
+                raise Exception(
+                    f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
+                    "Expected either 'oidc' or 'database'."
+                )
 
         config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
 
