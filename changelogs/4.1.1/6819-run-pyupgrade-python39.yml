@@ -1,0 +1,5 @@
+description: Run pyupgrade python39
+issue-nr: 6819
+issue-repo: inmanta-core
+change-type: patch
+destination-branches: [master, iso7, iso6]

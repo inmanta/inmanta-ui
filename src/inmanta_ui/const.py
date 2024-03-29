@@ -15,4 +15,5 @@
 
     Contact: code@inmanta.com
 """
+
 SLICE_UI = "ui.ui"
