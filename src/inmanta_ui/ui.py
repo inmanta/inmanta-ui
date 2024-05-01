@@ -61,7 +61,7 @@ class UISlice(ServerSlice):
         await super().stop()
 
     def get_dependencies(self) -> list[str]:
-        return []
+        return [SLICE_SERVER]
 
     def get_depended_by(self) -> list[str]:
         # Ensure we are started before the HTTP endpoint becomes available
@@ -89,13 +89,18 @@ class UISlice(ServerSlice):
                         'method': 'oidc',
                         'realm': '{oidc_realm.get()}',
                         'url': '{oidc_auth_url.get()}',
-                        'clientId': '{oidc_client_id.get()}'
-                    }};\n"""  # Use the same client-id as the dashboard
+                        'clientId': '{oidc_client_id.get()}',
+                    }};\n"""
             elif server_auth_method == "database":
                 config_js_content = """
-                    window.auth = {
+                    window.auth = {{
                         'method': 'database',
-                    };\n"""  # Use the same client-id as the dashboard
+                    }};\n"""
+            elif server_auth_method == "jwt":
+                config_js_content = """
+                    window.auth = {{
+                        'method': 'jwt',
+                    }};\n"""  # Use the same client-id as the dashboard
             else:
                 raise Exception(
                     f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
