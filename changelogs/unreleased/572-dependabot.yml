@@ -1,0 +1,7 @@
+change-type: patch
+description: Bump inmanta-dev-dependencies[async,extension,pytest] from 2.119.0 to
+    2.120.0
+destination-branches:
+- master
+- iso7
+sections: {}
