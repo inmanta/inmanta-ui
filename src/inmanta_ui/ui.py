@@ -100,7 +100,7 @@ class UISlice(ServerSlice):
                 config_js_content = """
                     window.auth = {{
                         'method': 'jwt',
-                    }};\n"""  # Use the same client-id as the dashboard
+                    }};\n"""
             else:
                 raise Exception(
                     f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
