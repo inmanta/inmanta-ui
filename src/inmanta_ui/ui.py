@@ -93,14 +93,14 @@ class UISlice(ServerSlice):
                     }};\n"""
             elif server_auth_method == "database":
                 config_js_content = """
-                    window.auth = {{
+                    window.auth = {
                         'method': 'database',
-                    }};\n"""
+                    };\n"""
             elif server_auth_method == "jwt":
                 config_js_content = """
-                    window.auth = {{
+                    window.auth = {
                         'method': 'jwt',
-                    }};\n"""
+                    };\n"""
             else:
                 raise Exception(
                     f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
