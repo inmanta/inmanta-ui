@@ -2,4 +2,4 @@
 inmanta-core
 
 # Dependencies of the code
-tornado==6.4
+tornado==6.4.1
