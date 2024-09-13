@@ -48,7 +48,7 @@ async def test_web_console_handler(server, inmanta_ui_config):
     # Should handle client side routes that don't start with 'lsm'
     response = await client.fetch(base_url + "/resources")
     assert response.code == 200
-    assert "Should be served by defauldddt" in response.body.decode("UTF-8")
+    assert "Should be served by default" in response.body.decode("UTF-8")
 
 
 @pytest.fixture
