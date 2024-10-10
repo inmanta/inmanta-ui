@@ -1,2 +1,0 @@
-pipeline_template: ci/inmanta-extensions/Jenkinsfile-pyp
-repo_name: inmanta-ui
