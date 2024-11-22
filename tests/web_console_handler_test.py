@@ -24,7 +24,7 @@ from inmanta.server import config
 
 @pytest.mark.asyncio
 async def test_web_console_handler(server, inmanta_ui_config):
-    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console"
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console"
     client = AsyncHTTPClient()
     response = await client.fetch(base_url)
     assert response.code == 200
@@ -62,7 +62,7 @@ async def test_auth_enabled(inmanta_ui_config_with_auth_enabled, server):
     Ensure that the ui extension doesn't crash if server.auth config option is enabled
     and the server.auth_method is left to its default value.
     """
-    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console"
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console"
     client = AsyncHTTPClient()
     response = await client.fetch(base_url)
     assert response.code == 200
@@ -73,7 +73,7 @@ async def test_start_location_redirect(server, inmanta_ui_config):
     """
     Ensure that the "start" location will redirect to the web console. (issue #202)
     """
-    port = config.get_bind_port()
+    port = config.server_bind_port.get()
     response_url = f"http://localhost:{port}/console/"
     http_client = AsyncHTTPClient()
     request = HTTPRequest(
@@ -85,7 +85,7 @@ async def test_start_location_redirect(server, inmanta_ui_config):
 
 @pytest.mark.asyncio
 async def test_web_console_config(server, inmanta_ui_config):
-    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console/config.js"
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console/config.js"
     client = AsyncHTTPClient()
     response = await client.fetch(base_url)
     assert response.code == 200
@@ -93,7 +93,7 @@ async def test_web_console_config(server, inmanta_ui_config):
     assert '\nexport const features = ["A", "B", "C"];' in response.body.decode()
 
     # test fetching from a deeper path
-    base_url = f"http://127.0.0.1:{config.get_bind_port()}/console/lsm/config.js"
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console/lsm/config.js"
     client = AsyncHTTPClient()
     response = await client.fetch(base_url)
     assert response.code == 200
