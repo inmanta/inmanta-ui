@@ -1,0 +1,6 @@
+---
+description: "Fix tests that broke due to the removal of the config.get_bind_port() method."
+issue-nr: 8197
+issue-repo: inmanta-core
+change-type: patch
+destination-branches: [master, iso7]
