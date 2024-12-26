@@ -41,7 +41,7 @@ async def server(inmanta_ui_config, server_config):
     """
     Override standard inmanta server to allow more config to be injected
     """
-    ibl = InmantaBootloader()
+    ibl = InmantaBootloader(configure_logging=True)
     await ibl.start()
 
     yield ibl.restserver
