@@ -1,0 +1,5 @@
+description: Fixed test case compatibility with core's changes to the logging config
+change-type: patch
+destination-branches:
+  - master
+  - iso7
