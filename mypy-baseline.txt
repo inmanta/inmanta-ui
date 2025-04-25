@@ -1,0 +1,4 @@
+src/inmanta_ui/config.py:0: error: Cannot infer type argument 1 of "Option"  [misc]
+src/inmanta_ui/config.py:0: error: Cannot infer type argument 1 of "Option"  [misc]
+src/inmanta_ui/config.py:0: error: Cannot infer type argument 1 of "Option"  [misc]
+src/inmanta_ui/ui.py:0: error: Argument 1 to "append" of "list" has incompatible type "tuple[str, type[RedirectHandler], dict[str, str]]"; expected "Rule"  [arg-type]
