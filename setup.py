@@ -26,6 +26,12 @@ setup(
     package_data={"": ["misc/*", "docs/*"]},
     include_package_data=True,
     install_requires=requires,
+    extras_require={
+        "dev": [
+            "bumpversion",
+            "inmanta-dev-dependencies[pytest,async,extension]",
+        ],
+    },
     entry_points={
     },
 )
