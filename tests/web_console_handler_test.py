@@ -17,6 +17,7 @@ Contact: code@inmanta.com
 """
 
 import os.path
+
 import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
@@ -118,4 +119,3 @@ async def test_no_caching_on_version_json(server, inmanta_ui_config, web_console
     cache_control_headers = response.headers.get_list("Cache-Control")
     assert len(cache_control_headers) == 1
     assert cache_control_headers[0] == "max-age=1"
-

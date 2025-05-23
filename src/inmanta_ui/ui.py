@@ -16,11 +16,11 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
+import datetime
 import json
 import logging
 import os
 from typing import cast
-import datetime
 
 from tornado import routing, web
 
@@ -117,7 +117,9 @@ class UISlice(ServerSlice):
                 # Don't cache requests for the version.json file in the browser, because it's used by the web-cosole
                 # to determine whether the version of the web-console cached in the browser is out of sync with
                 # the version hosted by the server.
-                routing.PathMatches(r"/console/(version\.json)"), FlatFileHandler, {**options, "cache_time": 1}
+                routing.PathMatches(r"/console/(version\.json)"),
+                FlatFileHandler,
+                {**options, "cache_time": 1},
             )
         )
         server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
@@ -147,7 +149,6 @@ class SingleFileHandler(web.StaticFileHandler):
         return web.StaticFileHandler.get_absolute_path(root, "")
 
 
-
 class FlatFileHandler(web.StaticFileHandler):
     """Always serves files from the root folder, useful when using a proxy"""
 
@@ -166,9 +167,7 @@ class FlatFileHandler(web.StaticFileHandler):
             return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
 
-    def get_cache_time(
-       self, path: str, modified: datetime.datetime | None, mime_type: str
-    ) -> int:
+    def get_cache_time(self, path: str, modified: datetime.datetime | None, mime_type: str) -> int:
         if self.cache_time is not None:
             return self.cache_time
         return super().get_cache_time(path, modified, mime_type)
