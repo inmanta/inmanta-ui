@@ -16,6 +16,7 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
+import os.path
 import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
@@ -99,3 +100,22 @@ async def test_web_console_config(server, inmanta_ui_config):
     assert response.code == 200
 
     assert '\nexport const features = ["A", "B", "C"];' in response.body.decode()
+
+
+async def test_no_caching_on_version_json(server, inmanta_ui_config, web_console_path: str):
+    """
+    Verify that requests for the version.json file set the response header that
+    stops the browser from caching the request.
+    """
+    path_version_json = os.path.join(web_console_path, "version.json")
+    with open(path_version_json, "w") as fh:
+        fh.write("test")
+
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console/version.json"
+    client = AsyncHTTPClient()
+    response = await client.fetch(base_url)
+    assert response.code == 200
+    cache_control_headers = response.headers.get_list("Cache-Control")
+    assert len(cache_control_headers) == 1
+    assert cache_control_headers[0] == "max-age=1"
+
