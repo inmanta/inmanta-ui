@@ -16,6 +16,7 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
+import datetime
 import json
 import logging
 import os
@@ -109,9 +110,19 @@ class UISlice(ServerSlice):
 
         config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
 
-        server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
+        server._handlers.append(
+            routing.Rule(
+                # Don't cache requests for the version.json file in the browser, because it's used by the web-cosole
+                # to determine whether the version of the web-console cached in the browser is out of sync with
+                # the version hosted by the server.
+                routing.PathMatches(r"/console/(version\.json)"),
+                FlatFileHandler,
+                {**options, "cache_time": 1},
+            )
+        )
+        server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"%s(.*\.\w{2,5}$)" % location),
@@ -141,9 +152,22 @@ class SingleFileHandler(web.StaticFileHandler):
 class FlatFileHandler(web.StaticFileHandler):
     """Always serves files from the root folder, useful when using a proxy"""
 
+    def initialize(self, path: str, default_filename: str | None = None, cache_time: int | None = None) -> None:
+        """
+        :param cache_time: Indicates how long (in seconds) the file should be cached by the browser.
+                           If None, the default behavior of the StaticFileHandler is used.
+        """
+        super().initialize(path=path, default_filename=default_filename)
+        self.cache_time = cache_time
+
     @classmethod
     def get_absolute_path(cls, root, path):
         parts = os.path.split(path)
         if parts:
             return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
+
+    def get_cache_time(self, path: str, modified: datetime.datetime | None, mime_type: str) -> int:
+        if self.cache_time is not None:
+            return self.cache_time
+        return super().get_cache_time(path, modified, mime_type)
