@@ -16,7 +16,6 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
-import datetime
 import json
 import logging
 import os
@@ -189,4 +188,3 @@ class FlatFileHandler(FileHandlerWithCacheControl):
         if parts:
             return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
-

@@ -115,13 +115,13 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
         with open(path, "w") as fh:
             fh.write("test")
 
-    for (url_path, can_be_cached) in [
-        ("/", False),                                  # Serve index.html -> No caching
-        ("/console/", False),                          # Serve index.html -> No caching
-        ("/console/index.html", False),                # Serve index.html -> No caching
-        ("/console/something/else", False),            # Serve index.html -> No caching
-        ("/console/version.json", False),              # version.json is never cached
-        ("/console/config.js", False),                 # config.json is never cached
+    for url_path, can_be_cached in [
+        ("/", False),  # Serve index.html -> No caching
+        ("/console/", False),  # Serve index.html -> No caching
+        ("/console/index.html", False),  # Serve index.html -> No caching
+        ("/console/something/else", False),  # Serve index.html -> No caching
+        ("/console/version.json", False),  # version.json is never cached
+        ("/console/config.js", False),  # config.json is never cached
         ("/console/something/else/config.js", False),  # config.json is never cached.
         ("/console/something.css", True),
         ("/console/aaa/bbb/something.css", True),
