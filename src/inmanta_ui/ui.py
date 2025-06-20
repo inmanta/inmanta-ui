@@ -16,7 +16,6 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
-import datetime
 import json
 import logging
 import os
@@ -114,15 +113,27 @@ class UISlice(ServerSlice):
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
             routing.Rule(
-                # Don't cache requests for the version.json file in the browser, because it's used by the web-cosole
+                # Don't cache requests for the version.json file in the browser, because it's used by the web-console
                 # to determine whether the version of the web-console cached in the browser is out of sync with
                 # the version hosted by the server.
                 routing.PathMatches(r"/console/(version\.json)"),
                 FlatFileHandler,
-                {**options, "cache_time": 1},
+                {**options, "set_no_cache_header": True},
             )
         )
-        server.add_static_content(r"/console/(.*)config.js", content=config_js_content)
+        server.add_static_content(r"/console/(.*)config.js", content=config_js_content, set_no_cache_header=True)
+        server._handlers.append(
+            routing.Rule(
+                routing.PathMatches(r"%s(.*index\.html$)" % location),
+                FlatFileHandler,
+                # Never cache the index.html page. Otherwise we might try to fetch a dependency
+                # from the server that no longer exists.
+                {**options, "set_no_cache_header": True},
+            )
+        )
+        # Match regular files, like *.js, *.json, *.css, etc.
+        # These files can be cached safely, as they are a dependency of the index.html file,
+        # which is not cached.
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"%s(.*\.\w{2,5}$)" % location),
@@ -133,15 +144,34 @@ class UISlice(ServerSlice):
         server._handlers.append(
             routing.Rule(routing.PathMatches(r"%s" % location[:-1]), web.RedirectHandler, {"url": location[1:]})
         )
+        # All other URLs are directed to the index.html page.
         server._handlers.append(
             routing.Rule(
-                routing.PathMatches(r"%s(.*)" % location), SingleFileHandler, {"path": os.path.join(path, "index.html")}
+                routing.PathMatches(r"%s(.*)" % location),
+                SingleFileHandler,
+                # Never cache the index.html page. Otherwise we might try to fetch a dependency
+                # from the server that no longer exists.
+                {"path": os.path.join(path, "index.html"), "set_no_cache_header": True},
             )
         )
         self._handlers.append((r"/", web.RedirectHandler, {"url": location[1:]}))
 
 
-class SingleFileHandler(web.StaticFileHandler):
+class FileHandlerWithCacheControl(web.StaticFileHandler):
+
+    def initialize(self, path: str, default_filename: str | None = None, set_no_cache_header: bool = False) -> None:
+        """
+        :param set_no_cache_header: True iff the "Cache-Control: no-cache" header will be set.
+        """
+        super().initialize(path=path, default_filename=default_filename)
+        self.set_no_cache_header = set_no_cache_header
+
+    def set_extra_headers(self, path: str) -> None:
+        if self.set_no_cache_header:
+            self.set_header("Cache-Control", "no-cache")
+
+
+class SingleFileHandler(FileHandlerWithCacheControl):
     """Always serves the single file given in the path option, useful for single page applications with client-side routing"""
 
     @classmethod
@@ -149,16 +179,8 @@ class SingleFileHandler(web.StaticFileHandler):
         return web.StaticFileHandler.get_absolute_path(root, "")
 
 
-class FlatFileHandler(web.StaticFileHandler):
+class FlatFileHandler(FileHandlerWithCacheControl):
     """Always serves files from the root folder, useful when using a proxy"""
-
-    def initialize(self, path: str, default_filename: str | None = None, cache_time: int | None = None) -> None:
-        """
-        :param cache_time: Indicates how long (in seconds) the file should be cached by the browser.
-                           If None, the default behavior of the StaticFileHandler is used.
-        """
-        super().initialize(path=path, default_filename=default_filename)
-        self.cache_time = cache_time
 
     @classmethod
     def get_absolute_path(cls, root, path):
@@ -166,8 +188,3 @@ class FlatFileHandler(web.StaticFileHandler):
         if parts:
             return web.StaticFileHandler.get_absolute_path(root, parts[-1])
         return web.StaticFileHandler.get_absolute_path(root, "")
-
-    def get_cache_time(self, path: str, modified: datetime.datetime | None, mime_type: str) -> int:
-        if self.cache_time is not None:
-            return self.cache_time
-        return super().get_cache_time(path, modified, mime_type)
