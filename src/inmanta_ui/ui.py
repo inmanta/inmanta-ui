@@ -71,6 +71,13 @@ class UISlice(ServerSlice):
         return [composer]
 
     def add_web_console_handler(self, server: Server) -> None:
+        """
+        All handlers created here must set the "Cache-Control: no-cache" header.
+            * This prevents caching issues in the browser.
+            * We keep the performance overhead of this limited by relying on the etag support
+              in the StaticFileHandler of Tornado, i.e. we don't transfer large files
+              over and over again if the content of that file hasn't changed.
+        """
         if not web_console_enabled.get():
             LOGGER.info("The web-console is disabled.")
             return
@@ -113,12 +120,9 @@ class UISlice(ServerSlice):
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
             routing.Rule(
-                # Don't cache requests for the version.json file in the browser, because it's used by the web-console
-                # to determine whether the version of the web-console cached in the browser is out of sync with
-                # the version hosted by the server.
                 routing.PathMatches(r"/console/(version\.json)"),
                 FlatFileHandler,
-                {**options, "set_no_cache_header": True},
+                options,
             )
         )
         server.add_static_content(r"/console/(.*)config.js", content=config_js_content, set_no_cache_header=True)
@@ -126,14 +130,10 @@ class UISlice(ServerSlice):
             routing.Rule(
                 routing.PathMatches(r"%s(.*index\.html$)" % location),
                 FlatFileHandler,
-                # Never cache the index.html page. Otherwise we might try to fetch a dependency
-                # from the server that no longer exists.
-                {**options, "set_no_cache_header": True},
+                options,
             )
         )
         # Match regular files, like *.js, *.json, *.css, etc.
-        # These files can be cached safely, as they are a dependency of the index.html file,
-        # which is not cached.
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"%s(.*\.\w{2,5}$)" % location),
@@ -149,9 +149,7 @@ class UISlice(ServerSlice):
             routing.Rule(
                 routing.PathMatches(r"%s(.*)" % location),
                 SingleFileHandler,
-                # Never cache the index.html page. Otherwise we might try to fetch a dependency
-                # from the server that no longer exists.
-                {"path": os.path.join(path, "index.html"), "set_no_cache_header": True},
+                {"path": os.path.join(path, "index.html")},
             )
         )
         self._handlers.append((r"/", web.RedirectHandler, {"url": location[1:]}))
@@ -159,7 +157,7 @@ class UISlice(ServerSlice):
 
 class FileHandlerWithCacheControl(web.StaticFileHandler):
 
-    def initialize(self, path: str, default_filename: str | None = None, set_no_cache_header: bool = False) -> None:
+    def initialize(self, path: str, default_filename: str | None = None, set_no_cache_header: bool = True) -> None:
         """
         :param set_no_cache_header: True iff the "Cache-Control: no-cache" header will be set.
         """
