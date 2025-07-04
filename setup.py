@@ -8,7 +8,7 @@ requires = [
 namespace_packages = ["inmanta_ext.ui"]
 
 setup(
-    version="5.1.6",
+    version="5.1.7",
     python_requires=">=3.11",  # also update classifiers
     # Meta data
     name="inmanta-ui",
@@ -26,6 +26,12 @@ setup(
     package_data={"": ["misc/*", "docs/*"]},
     include_package_data=True,
     install_requires=requires,
+    extras_require={
+        "dev": [
+            "bumpversion",
+            "inmanta-dev-dependencies[pytest,async,extension]",
+        ],
+    },
     entry_points={
     },
 )

@@ -1,0 +1,6 @@
+---
+description: "Make sure that requests for `/console/version.json` are not cached by the browser."
+change-type: patch
+destination-branches: [master, iso8, iso7]
+sections:
+  bugfix: "{{description}}"
