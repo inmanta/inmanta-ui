@@ -105,9 +105,8 @@ async def test_web_console_config(server, inmanta_ui_config):
 
 async def test_caching(server, inmanta_ui_config, web_console_path: str):
     """
-    Verify that requests for the version.json, config.js and index.html files
-    set the response header that stops the browser from caching the file. Other
-    files should not be cached.
+    Verify that requests for files like version.json, config.js and index.html
+    set the response header that stops the browser from caching the file.
     """
     # Ensure the required files exist in the root of the web-console folder.
     for file in ["version.json", "config.js", "something.css", "something.js"]:
@@ -115,26 +114,23 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
         with open(path, "w") as fh:
             fh.write("test")
 
-    for url_path, can_be_cached in [
-        ("/", False),  # Serve index.html -> No caching
-        ("/console/", False),  # Serve index.html -> No caching
-        ("/console/index.html", False),  # Serve index.html -> No caching
-        ("/console/something/else", False),  # Serve index.html -> No caching
-        ("/console/version.json", False),  # version.json is never cached
-        ("/console/config.js", False),  # config.json is never cached
-        ("/console/something/else/config.js", False),  # config.json is never cached.
-        ("/console/something.css", True),
-        ("/console/aaa/bbb/something.css", True),
-        ("/console/something.js", True),
-        ("/console/aaa/bbb/something.js", True),
+    for url_path in [
+        "/",
+        "/console/",
+        "/console/index.html",
+        "/console/something/else",
+        "/console/version.json",
+        "/console/config.js",
+        "/console/something/else/config.js",
+        "/console/something.css",
+        "/console/aaa/bbb/something.css",
+        "/console/something.js",
+        "/console/aaa/bbb/something.js",
     ]:
         base_url = f"http://127.0.0.1:{config.server_bind_port.get()}{url_path}"
         client = AsyncHTTPClient()
         response = await client.fetch(base_url)
         assert response.code == 200
         cache_control_headers = response.headers.get_list("Cache-Control")
-        if can_be_cached:
-            assert not cache_control_headers
-        else:
-            assert len(cache_control_headers) == 1, f"No Cache-Control header found for {url_path}"
-            assert cache_control_headers[0] == "no-cache", f"Invalid value found for Cache-Control header for {url_path}"
+        assert len(cache_control_headers) == 1, f"No Cache-Control header found for {url_path}"
+        assert cache_control_headers[0] == "no-cache", f"Invalid value found for Cache-Control header for {url_path}"
