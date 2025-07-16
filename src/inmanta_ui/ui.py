@@ -97,16 +97,19 @@ class UISlice(ServerSlice):
                         'realm': '{oidc_realm.get()}',
                         'url': '{oidc_auth_url.get()}',
                         'clientId': '{oidc_client_id.get()}',
+                        'provider': '{opt.authorization_provider.get()}',
                     }};\n"""
             elif server_auth_method == "database":
                 config_js_content = """
                     window.auth = {
                         'method': 'database',
+                        'provider': '{opt.authorization_provider.get()}',
                     };\n"""
             elif server_auth_method == "jwt":
                 config_js_content = """
                     window.auth = {
                         'method': 'jwt',
+                        'provider': '{opt.authorization_provider.get()}',
                     };\n"""
             else:
                 raise Exception(
