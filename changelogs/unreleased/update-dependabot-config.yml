@@ -1,0 +1,4 @@
+---
+description: "Make sure that the iso8 branch is tracked by dependabot, because it diverged from master."
+change-type: patch
+destination-branches: [master]
