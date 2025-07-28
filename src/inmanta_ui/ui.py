@@ -16,11 +16,11 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
+import datetime
 import json
 import logging
 import os
-from typing import cast, Optional
-import datetime
+from typing import Optional, cast
 
 from tornado import routing, web
 

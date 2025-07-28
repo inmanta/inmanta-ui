@@ -136,7 +136,7 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str, build_d
         assert len(cache_control_headers) == 1, f"No Cache-Control header found for {url_path}"
         assert cache_control_headers[0] == "no-cache", f"Invalid value found for Cache-Control header for {url_path}"
         assert response.headers.get_list("Etag")
-        last_modified_header =  response.headers.get_list("Last-Modified")
+        last_modified_header = response.headers.get_list("Last-Modified")
         if url_path.endswith("/config.js"):
             # The config.js file is never cached
             assert len(last_modified_header) == 0

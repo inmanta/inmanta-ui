@@ -16,9 +16,9 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
-import datetime
 import asyncio
 import concurrent
+import datetime
 import logging
 import os
 
@@ -69,14 +69,17 @@ def version_json(build_date: datetime.datetime) -> str:
     The content of the version.json file in the root of the web-console directory.
     """
     build_date_str = build_date.strftime("%Y-%m-%dT%H:%M:%S.%f")
-    build_date_str =  f"{build_date_str[0:-3]}Z"
-    return """
+    build_date_str = f"{build_date_str[0:-3]}Z"
+    return (
+        """
     {
       "version_info": {
         "buildDate": "%s"
       }
     }
-    """ % build_date_str
+    """
+        % build_date_str
+    )
 
 
 @pytest.fixture
