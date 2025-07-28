@@ -18,6 +18,7 @@ Contact: code@inmanta.com
 
 import asyncio
 import concurrent
+import datetime
 import logging
 import os
 
@@ -55,7 +56,34 @@ async def server(inmanta_ui_config, server_config):
 
 
 @pytest.fixture
-def web_console_path(tmpdir):
+def build_date() -> datetime.datetime:
+    """
+    The build date of the web-console for the tests.
+    """
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+@pytest.fixture
+def version_json(build_date: datetime.datetime) -> str:
+    """
+    The content of the version.json file in the root of the web-console directory.
+    """
+    build_date_str = build_date.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    build_date_str = f"{build_date_str[0:-3]}Z"
+    return (
+        """
+    {
+      "version_info": {
+        "buildDate": "%s"
+      }
+    }
+    """
+        % build_date_str
+    )
+
+
+@pytest.fixture
+def web_console_path(tmpdir, version_json: str):
     with open(os.path.join(tmpdir, "index.html"), "w") as index:
         index.write(
             """<!DOCTYPE html>
@@ -71,5 +99,7 @@ def web_console_path(tmpdir):
         )
     with open(os.path.join(tmpdir, "asset.js"), "w") as asset_file:
         asset_file.write("// Additional javascript file")
+    with open(os.path.join(tmpdir, "version.json"), "w") as fh:
+        fh.write(version_json)
 
     return tmpdir
