@@ -68,8 +68,10 @@ def version_json(build_date: datetime.datetime) -> str:
     """
     The content of the version.json file in the root of the web-console directory.
     """
-    build_date_str = build_date.strftime("%Y-%m-%dT%H:%M:%S.%f")
-    build_date_str = f"{build_date_str[0:-3]}Z"
+    # TODO: This is a quickfix, restore the original implementation when format version.json file is fixed.
+    build_date_str = build_date.strftime("%a %b %d %Y %H:%M:%S %Z%z (Central European Summer Time)")
+    # build_date_str = build_date.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    # build_date_str = f"{build_date_str[0:-3]}Z"
     return (
         """
     {
