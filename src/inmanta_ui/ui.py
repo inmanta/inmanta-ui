@@ -175,8 +175,10 @@ class FileHandlerWithCacheControl(web.StaticFileHandler):
         with open(path_version_json_file, "r") as fh:
             version_json_dct = json.load(fh)
         # TODO: This is a quickfix, restore the original implementation when format version.json file is fixed.
-        return datetime.datetime.strptime(version_json_dct["version_info"]["buildDate"], "%a %b %d %Y %H:%M:%S %Z%z (Central European Summer Time)")
-        #return datetime.datetime.fromisoformat(version_json_dct["version_info"]["buildDate"])
+        return datetime.datetime.strptime(
+            version_json_dct["version_info"]["buildDate"], "%a %b %d %Y %H:%M:%S %Z%z (Central European Summer Time)"
+        )
+        # return datetime.datetime.fromisoformat(version_json_dct["version_info"]["buildDate"])
 
     def set_extra_headers(self, path: str) -> None:
         if self.set_no_cache_header:
