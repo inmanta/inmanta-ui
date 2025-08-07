@@ -118,7 +118,7 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
             fh.write("test")
 
     # The modification timestamps are used by Tornado to determine the values
-    # for the last-modified header.
+    # for the last-modified header. The last-modified header has seconds precision.
     modification_timestamp = datetime.datetime.now().replace(microsecond=0).astimezone()
     access_timestamp = modification_timestamp + datetime.timedelta(hours=5)
     for root, dirs, files in os.walk(web_console_path):
@@ -157,5 +157,4 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
             assert len(last_modified_header) == 1
             actual_last_modified_timestamp = datetime.datetime.strptime(last_modified_header[0], "%a, %d %b %Y %H:%M:%S %Z")
             actual_last_modified_timestamp = actual_last_modified_timestamp.replace(tzinfo=datetime.timezone.utc)
-            # The Last-Modified header has seconds precision.
             assert actual_last_modified_timestamp == modification_timestamp
