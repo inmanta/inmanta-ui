@@ -1,0 +1,4 @@
+---
+description: "Use the modification time of files on disk for the last-modified header."
+change-type: patch
+destination-branches: [master, iso8, iso7]
