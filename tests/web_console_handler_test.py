@@ -17,6 +17,7 @@ Contact: code@inmanta.com
 """
 
 import datetime
+import os
 import os.path
 
 import pytest
@@ -104,16 +105,28 @@ async def test_web_console_config(server, inmanta_ui_config):
     assert '\nexport const features = ["A", "B", "C"];' in response.body.decode()
 
 
-async def test_caching(server, inmanta_ui_config, web_console_path: str, build_date: datetime.datetime):
+async def test_caching(server, inmanta_ui_config, web_console_path: str):
     """
     Verify that requests for files like version.json, config.js and index.html
     set the response header that stops the browser from caching the file.
     """
+
     # Ensure the required files exist in the root of the web-console folder.
-    for file in ["config.js", "something.css", "something.js"]:
+    for file in ["version.json", "config.js", "something.css", "something.js"]:
         path = os.path.join(web_console_path, file)
         with open(path, "w") as fh:
             fh.write("test")
+
+    # The modification timestamps are used by Tornado to determine the values
+    # for the last-modified header. The last-modified header has seconds precision.
+    modification_timestamp = datetime.datetime.now().replace(microsecond=0).astimezone()
+    access_timestamp = modification_timestamp + datetime.timedelta(hours=5)
+    for root, dirs, files in os.walk(web_console_path):
+        for file in files:
+            os.utime(
+                path=os.path.join(root, file),
+                times=(access_timestamp.timestamp(), modification_timestamp.timestamp()),
+            )
 
     for url_path in [
         "/",
@@ -144,6 +157,4 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str, build_d
             assert len(last_modified_header) == 1
             actual_last_modified_timestamp = datetime.datetime.strptime(last_modified_header[0], "%a, %d %b %Y %H:%M:%S %Z")
             actual_last_modified_timestamp = actual_last_modified_timestamp.replace(tzinfo=datetime.timezone.utc)
-            # The Last-Modified header has seconds precision.
-            expected_last_modified_timestamp = build_date.replace(microsecond=0)
-            assert actual_last_modified_timestamp == expected_last_modified_timestamp
+            assert actual_last_modified_timestamp == modification_timestamp

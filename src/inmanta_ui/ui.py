@@ -16,11 +16,10 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
-import datetime
 import json
 import logging
 import os
-from typing import Optional, cast
+from typing import cast
 
 from tornado import routing, web
 
@@ -164,32 +163,10 @@ class FileHandlerWithCacheControl(web.StaticFileHandler):
         """
         super().initialize(path=path, default_filename=default_filename)
         self.set_no_cache_header = set_no_cache_header
-        self._build_time: datetime.datetime = self._get_build_time()
-
-    def _get_build_time(self) -> datetime.datetime:
-        """
-        Returns a datetime object that contains the build_time of the web-console,
-        defined in the version.json file.
-        """
-        path_version_json_file = os.path.join(web_console_path.get(), "version.json")
-        with open(path_version_json_file, "r") as fh:
-            version_json_dct = json.load(fh)
-        # TODO: This is a quickfix, restore the original implementation when format version.json file is fixed.
-        return datetime.datetime.strptime(
-            version_json_dct["version_info"]["buildDate"], "%a %b %d %Y %H:%M:%S %Z%z (Central European Summer Time)"
-        )
-        # return datetime.datetime.fromisoformat(version_json_dct["version_info"]["buildDate"])
 
     def set_extra_headers(self, path: str) -> None:
         if self.set_no_cache_header:
             self.set_header("Cache-Control", "no-cache")
-
-    def get_modified_time(self) -> Optional[datetime.datetime]:
-        """
-        We rely on the build time here, because the modification timestamps of the files
-        on disk are not guaranteed to be correct.
-        """
-        return self._build_time
 
 
 class SingleFileHandler(FileHandlerWithCacheControl):
