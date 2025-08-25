@@ -7,3 +7,4 @@ inmanta-support>=0.dev
 inmanta-license>=0.dev
 inmanta-lsm>=0.dev
 inmanta-ui>=0.dev
+inmanta-core>=0.dev
