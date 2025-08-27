@@ -1,0 +1,5 @@
+description: Move internal dev constraints from setup.py to requirements.txt.
+issue-nr: 1999
+issue-repo: inmanta-lsm
+change-type: patch
+destination-branches: [iso8, iso7]
