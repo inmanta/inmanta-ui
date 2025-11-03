@@ -1,0 +1,4 @@
+---
+description: "Added quickfix for the buildDate field in version.json file"
+change-type: patch
+destination-branches: [iso8, iso7]
