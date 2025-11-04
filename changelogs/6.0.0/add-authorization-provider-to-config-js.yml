@@ -1,0 +1,4 @@
+---
+description: "Added the authorization provider to the config.js file."
+change-type: major
+destination-branches: [master]

@@ -1,0 +1,4 @@
+---
+description: "Always set no-cache response header on requests to /console endpoint."
+change-type: patch
+destination-branches: [master, iso8, iso7]
