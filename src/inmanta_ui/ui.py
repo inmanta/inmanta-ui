@@ -23,6 +23,7 @@ from typing import cast
 
 from tornado import routing, web
 
+from inmanta.protocol.rest.server import StaticContentHandler
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
 from inmanta.server import extensions, protocol
@@ -128,7 +129,18 @@ class UISlice(ServerSlice):
                 options,
             )
         )
-        server.add_static_content(r"/console/(.*)config.js", content=config_js_content, set_no_cache_header=True)
+        server._handlers.append(
+            routing.Rule(
+                routing.PathMatches(r"/console/(.*/)*config.js$"),
+                StaticContentHandler,
+                {
+                    "transport": server,
+                    "content": config_js_content,
+                    "content_type": "application/javascript",
+                    "set_no_cache_header": True,
+                },
+            )
+        )
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"%s(.*index\.html$)" % location),
