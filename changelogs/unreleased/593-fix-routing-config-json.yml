@@ -1,0 +1,8 @@
+---
+description: "Fix bug where paths containing 'config.json' incorrectly serve the config.js file."
+issue-nr: 593
+issue-repo: inmanta-ui
+change-type: patch
+destination-branches: [master, iso8, iso7]
+sections:
+  bugfix: "{{description}}"
