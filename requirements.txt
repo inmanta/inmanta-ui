@@ -1,5 +1,5 @@
 bumpversion==0.6.0
-inmanta-dev-dependencies==2.182.0
+inmanta-dev-dependencies==2.186.0
 tornado==6.5.2
 
 # allow dev versions for extensions
