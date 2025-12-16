@@ -1,0 +1,6 @@
+change-type: patch
+description: Bump tornado from 6.5.3 to 6.5.4
+destination-branches:
+- iso8
+- iso7
+sections: {}
