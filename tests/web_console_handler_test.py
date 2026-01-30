@@ -158,3 +158,29 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
             actual_last_modified_timestamp = datetime.datetime.strptime(last_modified_header[0], "%a, %d %b %Y %H:%M:%S %Z")
             actual_last_modified_timestamp = actual_last_modified_timestamp.replace(tzinfo=datetime.timezone.utc)
             assert actual_last_modified_timestamp == modification_timestamp
+
+
+async def test_config_js(server, inmanta_ui_config, web_console_path: str):
+    """
+    Verify that the config.js is handled correctly by the webserver.
+    """
+
+    # Add a config.js file to the root
+    path_config_js = os.path.join(web_console_path, "config.js")
+    with open(path_config_js, "w"):
+        pass
+
+    client = AsyncHTTPClient()
+    base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console"
+
+    for url, response_code in [
+        (f"{base_url}/config.js", 200),
+        # Fetching the config.js from a non-root path should be possible as well
+        # to allow the application to run behind a reverse-proxy.
+        (f"{base_url}/something/config.js", 200),
+        # Only serve the config.js and no other files with the same prefix.
+        (f"{base_url}/config.json", 404),
+        (f"{base_url}/something/config.json", 404),
+    ]:
+        response = await client.fetch(url, raise_error=False)
+        assert response.code == response_code, url
