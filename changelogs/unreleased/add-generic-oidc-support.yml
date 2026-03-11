@@ -1,0 +1,5 @@
+description: Added support for generic OIDC config generation, enabling identity providers like MS Entra ID, Okta, and Auth0 via the new oidc_authority config option.
+change-type: minor
+destination-branches: [master]
+sections:
+  feature: "{{description}}"
