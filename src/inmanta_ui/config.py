@@ -53,7 +53,7 @@ oidc_client_id = Option(
 # When oidc_authority is set, the frontend uses oidc-client-ts with
 # authorization code flow + PKCE instead of keycloak-js implicit flow.
 # This works with any OIDC-compliant IdP (MS Entra ID, Okta, Auth0, etc.).
-oidc_authority = Option(
+oidc_authority: Option[str] = Option(
     "web-ui",
     "oidc_authority",
     None,
@@ -61,7 +61,7 @@ oidc_authority = Option(
     "When set, the web console uses the generic OIDC provider instead of Keycloak.",
     is_str,
 )
-oidc_scope = Option(
+oidc_scope: Option[str] = Option(
     "web-ui",
     "oidc_scope",
     None,
