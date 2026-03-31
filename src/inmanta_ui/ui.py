@@ -102,7 +102,7 @@ class UISlice(ServerSlice):
             server_auth_method: str = opt.server_auth_method.get()
             if server_auth_method == "oidc":
                 authority = oidc_authority.get()
-                if authority is not None and authority != "None":
+                if authority:
                     # Generic OIDC mode: uses oidc-client-ts with authorization
                     # code flow + PKCE. Works with any OIDC-compliant IdP.
                     auth_config: dict[str, str] = {
@@ -112,7 +112,7 @@ class UISlice(ServerSlice):
                         "provider": opt.authorization_provider.get(),
                     }
                     scope = oidc_scope.get()
-                    if scope is not None and scope != "None":
+                    if scope:
                         auth_config["scope"] = scope
                     config_js_content = f"\nwindow.auth = {json.dumps(auth_config)};\n"
                 else:
