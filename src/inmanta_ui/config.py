@@ -65,7 +65,7 @@ oidc_authority = Option(
 oidc_scope = Option(
     "web-ui",
     "oidc_scope",
-    "",
-    "Optional OIDC scopes override for the generic OIDC provider (default: 'openid profile email').",
+    "openid profile email",
+    "Optional OIDC scopes override for the generic OIDC provider",
     is_str,
 )
