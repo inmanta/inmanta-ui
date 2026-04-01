@@ -40,14 +40,15 @@ web_console_features = Option(
 # OpenID Connect authentication
 ################################
 
+oidc_client_id = Option(
+    "web-ui", "oidc_client_id", None, "The OpenID Connect client id configured for this application.", is_str
+)
+
 # Legacy Keycloak-specific options (method: "oidc").
 # Used when oidc_authority is not set. The frontend receives these as a
 # keycloak-js config and uses the implicit flow.
 oidc_realm = Option("web-ui", "oidc_realm", "inmanta", "The realm to use for OpenID Connect authentication.", is_str)
 oidc_auth_url = Option("web-ui", "oidc_auth_url", None, "The auth url of the OpenID Connect server to use.", is_str)
-oidc_client_id = Option(
-    "web-ui", "oidc_client_id", None, "The OpenID Connect client id configured for this application.", is_str
-)
 
 # Generic OIDC options (method: "oidc-generic").
 # When oidc_authority is set, the frontend uses oidc-client-ts with
