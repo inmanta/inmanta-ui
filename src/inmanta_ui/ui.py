@@ -31,7 +31,16 @@ from inmanta.server.protocol import ServerSlice
 from inmanta.server.server import Server
 from inmanta_ui.const import SLICE_UI
 
-from .config import oidc_auth_url, oidc_client_id, oidc_realm, web_console_enabled, web_console_features, web_console_path
+from .config import (
+    oidc_auth_url,
+    oidc_authority,
+    oidc_client_id,
+    oidc_realm,
+    oidc_scope,
+    web_console_enabled,
+    web_console_features,
+    web_console_path,
+)
 
 composer = extensions.BoolFeature(
     slice=SLICE_UI,
@@ -92,7 +101,23 @@ class UISlice(ServerSlice):
         if opt.server_enable_auth.get():
             server_auth_method: str = opt.server_auth_method.get()
             if server_auth_method == "oidc":
-                config_js_content = f"""
+                authority = oidc_authority.get()
+                if authority:
+                    # Generic OIDC mode: uses oidc-client-ts with authorization
+                    # code flow + PKCE. Works with any OIDC-compliant IdP.
+                    auth_config: dict[str, str] = {
+                        "method": "oidc-generic",
+                        "authority": authority,
+                        "clientId": oidc_client_id.get(),
+                        "provider": opt.authorization_provider.get(),
+                    }
+                    scope = oidc_scope.get()
+                    if scope:
+                        auth_config["scope"] = scope
+                    config_js_content = f"\nwindow.auth = {json.dumps(auth_config)};\n"
+                else:
+                    # Legacy Keycloak mode: uses keycloak-js with implicit flow.
+                    config_js_content = f"""
                     window.auth = {{
                         'method': 'oidc',
                         'realm': '{oidc_realm.get()}',
