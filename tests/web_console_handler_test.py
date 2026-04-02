@@ -220,9 +220,9 @@ async def _start_server():
                 "method": "oidc-generic",
                 "authority": "https://login.microsoftonline.com/test-tenant/v2.0",
                 "clientId": "test-client-id",
-                "!scope": True,
+                "scope": "openid profile email",
             },
-            id="generic-without-scope",
+            id="generic-default-scope",
         ),
         pytest.param(
             {
@@ -278,10 +278,7 @@ async def test_oidc_config(inmanta_ui_config, oidc_config, expected_assertions, 
             auth_json = body.split("window.auth = ")[1].split(";\n")[0]
             auth_config = json.loads(auth_json)
             for key, value in expected_assertions.items():
-                if key.startswith("!"):
-                    assert key[1:] not in auth_config
-                else:
-                    assert auth_config[key] == value
+                assert auth_config[key] == value
         else:
             for key, value in expected_assertions.items():
                 assert f"'{key}': '{value}'" in body
