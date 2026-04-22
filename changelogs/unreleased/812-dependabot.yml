@@ -1,0 +1,6 @@
+change-type: patch
+description: Update inmanta-core requirement from >=0.dev to >=14.0.0
+destination-branches:
+- master
+- iso9
+sections: {}
