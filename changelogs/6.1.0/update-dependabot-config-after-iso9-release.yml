@@ -1,0 +1,3 @@
+description: Remove iso8 from dependabot config
+change-type: patch
+destination-branches: [master, iso9]
