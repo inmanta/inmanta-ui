@@ -16,7 +16,12 @@ limitations under the License.
 Contact: code@inmanta.com
 """
 
+import asyncio
+import concurrent
+import contextlib
 import datetime
+import json
+import logging
 import os
 import os.path
 
@@ -24,6 +29,9 @@ import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
 from inmanta.server import config
+from inmanta.server.bootloader import InmantaBootloader
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.asyncio
@@ -184,3 +192,93 @@ async def test_config_js(server, inmanta_ui_config, web_console_path: str):
     ]:
         response = await client.fetch(url, raise_error=False)
         assert response.code == response_code, url
+
+
+@contextlib.asynccontextmanager
+async def _start_server():
+    ibl = InmantaBootloader(configure_logging=True)
+    await ibl.start()
+    try:
+        yield ibl.restserver
+    finally:
+        try:
+            await asyncio.wait_for(ibl.stop(), 15)
+        except concurrent.futures.TimeoutError:
+            logger.exception("Timeout during stop of the server in teardown")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "oidc_config,expected_assertions",
+    [
+        pytest.param(
+            {
+                "web-ui.oidc_authority": "https://login.microsoftonline.com/test-tenant/v2.0",
+                "web-ui.oidc_client_id": "test-client-id",
+            },
+            {
+                "method": "oidc-generic",
+                "authority": "https://login.microsoftonline.com/test-tenant/v2.0",
+                "clientId": "test-client-id",
+                "scope": "openid profile email",
+            },
+            id="generic-default-scope",
+        ),
+        pytest.param(
+            {
+                "web-ui.oidc_authority": "https://login.microsoftonline.com/test-tenant/v2.0",
+                "web-ui.oidc_client_id": "test-client-id",
+                "web-ui.oidc_scope": "openid profile email api://inmantaso/.default",
+            },
+            {
+                "method": "oidc-generic",
+                "authority": "https://login.microsoftonline.com/test-tenant/v2.0",
+                "clientId": "test-client-id",
+                "scope": "openid profile email api://inmantaso/.default",
+            },
+            id="generic-with-scope",
+        ),
+        pytest.param(
+            {
+                "web-ui.oidc_realm": "test-realm",
+                "web-ui.oidc_auth_url": "https://keycloak.example.com/auth",
+                "web-ui.oidc_client_id": "test-client-id",
+            },
+            {
+                "method": "oidc",
+                "realm": "test-realm",
+                "url": "https://keycloak.example.com/auth",
+                "clientId": "test-client-id",
+            },
+            id="keycloak-legacy",
+        ),
+    ],
+)
+async def test_oidc_config(inmanta_ui_config, oidc_config, expected_assertions, server_config):
+    """
+    Verify that config.js emits the correct auth config for both the generic
+    OIDC provider (oidc_authority set) and the legacy Keycloak provider
+    (oidc_authority not set).
+    """
+    config.Config.set("server", "auth", "True")
+    config.Config.set("server", "auth_method", "oidc")
+    for key, value in oidc_config.items():
+        section, option = key.split(".", 1)
+        config.Config.set(section, option, value)
+
+    async with _start_server():
+        base_url = f"http://127.0.0.1:{config.server_bind_port.get()}/console/config.js"
+        client = AsyncHTTPClient()
+        response = await client.fetch(base_url)
+        assert response.code == 200
+
+        body = response.body.decode()
+
+        if expected_assertions["method"] == "oidc-generic":
+            auth_json = body.split("window.auth = ")[1].split(";\n")[0]
+            auth_config = json.loads(auth_json)
+            for key, value in expected_assertions.items():
+                assert auth_config[key] == value
+        else:
+            for key, value in expected_assertions.items():
+                assert f"'{key}': '{value}'" in body
