@@ -1,0 +1,6 @@
+change-type: patch
+description: Update inmanta-ui requirement from >=6.1.0 to >=6.1.1
+destination-branches:
+- master
+- iso9
+sections: {}
