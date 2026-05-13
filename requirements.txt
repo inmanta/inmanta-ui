@@ -6,5 +6,5 @@ tornado==6.5.5
 inmanta-support>=0.dev
 inmanta-license>=0.dev
 inmanta-lsm>=0.dev
-inmanta-ui>=6.1.0
+inmanta-ui>=6.1.1
 inmanta-core>=14.0.0
