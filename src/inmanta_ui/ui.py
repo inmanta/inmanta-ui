@@ -79,59 +79,46 @@ async def build_config_js_content() -> str:
     (config.js is never cached) so the local login fallback flag reflects the live state of
     database auth.
     """
-    config_js_content = ""
-    if opt.server_enable_auth.get():
-        server_auth_method: str = opt.server_auth_method.get()
-        if server_auth_method == "oidc":
-            authority = oidc_authority.get()
-            if authority:
-                # Generic OIDC mode: uses oidc-client-ts with authorization
-                # code flow + PKCE. Works with any OIDC-compliant IdP.
-                auth_config: dict[str, object] = {
-                    "method": "oidc-generic",
-                    "authority": authority,
-                    "clientId": oidc_client_id.get(),
-                    "provider": opt.authorization_provider.get(),
-                }
-                scope = oidc_scope.get()
-                if scope:
-                    auth_config["scope"] = scope
-                if oidc_local_fallback.get():
-                    auth_config["localFallback"] = await _is_database_auth_functional()
-                config_js_content = f"\nwindow.auth = {json.dumps(auth_config)};\n"
-            else:
-                # Legacy Keycloak mode: uses keycloak-js with implicit flow. The local login
-                # fallback is not supported for this deprecated provider.
-                config_js_content = f"""
-                window.auth = {{
-                    'method': 'oidc',
-                    'realm': '{oidc_realm.get()}',
-                    'url': '{oidc_auth_url.get()}',
-                    'clientId': '{oidc_client_id.get()}',
-                    'provider': '{opt.authorization_provider.get()}',
-                }};\n"""
-        elif server_auth_method == "database":
-            config_js_content = f"""
-                window.auth = {{
-                    'method': 'database',
-                    'provider': '{opt.authorization_provider.get()}',
-                }};\n"""
-        elif server_auth_method == "jwt":
-            local_fallback = await _is_database_auth_functional() if oidc_local_fallback.get() else False
-            config_js_content = f"""
-                window.auth = {{
-                    'method': 'jwt',
-                    'provider': '{opt.authorization_provider.get()}',
-                    'localFallback': {json.dumps(local_fallback)},
-                }};\n"""
-        else:
-            raise Exception(
-                f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
-                "Expected either 'oidc' or 'database'."
-            )
+    features = f"\nexport const features = {json.dumps(web_console_features.get())};\n"
+    if not opt.server_enable_auth.get():
+        return features
 
-    config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
-    return config_js_content
+    auth_method: str = opt.server_auth_method.get()
+    provider = opt.authorization_provider.get()
+    # Whether to advertise the database login fallback: enabled by config and actually usable.
+    # The DB check is only run when the setting is on (short-circuit).
+    local_fallback = oidc_local_fallback.get() and await _is_database_auth_functional()
+
+    if auth_method == "database":
+        auth_config: dict[str, object] = {"method": "database", "provider": provider}
+    elif auth_method == "jwt":
+        auth_config = {"method": "jwt", "provider": provider, "localFallback": local_fallback}
+    elif auth_method == "oidc" and oidc_authority.get():
+        # Generic OIDC mode: oidc-client-ts with authorization code flow + PKCE.
+        auth_config = {
+            "method": "oidc-generic",
+            "authority": oidc_authority.get(),
+            "clientId": oidc_client_id.get(),
+            "provider": provider,
+            "localFallback": local_fallback,
+        }
+        if oidc_scope.get():
+            auth_config["scope"] = oidc_scope.get()
+    elif auth_method == "oidc":
+        # Legacy Keycloak mode: keycloak-js implicit flow. No local login fallback.
+        auth_config = {
+            "method": "oidc",
+            "realm": oidc_realm.get(),
+            "url": oidc_auth_url.get(),
+            "clientId": oidc_client_id.get(),
+            "provider": provider,
+        }
+    else:
+        raise Exception(
+            f"Invalid value for config option server.auth_method: {auth_method}. " "Expected 'oidc', 'database' or 'jwt'."
+        )
+
+    return f"\nwindow.auth = {json.dumps(auth_config)};\n" + features
 
 
 class ConfigJsHandler(web.RequestHandler):

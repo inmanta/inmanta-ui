@@ -274,16 +274,12 @@ async def test_oidc_config(inmanta_ui_config, oidc_config, expected_assertions, 
 
         body = response.body.decode()
 
+        auth_config = json.loads(body.split("window.auth = ")[1].split(";\n")[0])
+        for key, value in expected_assertions.items():
+            assert auth_config[key] == value
         if expected_assertions["method"] == "oidc-generic":
-            auth_json = body.split("window.auth = ")[1].split(";\n")[0]
-            auth_config = json.loads(auth_json)
-            for key, value in expected_assertions.items():
-                assert auth_config[key] == value
-            # Without the setting, no local fallback is advertised.
-            assert "localFallback" not in auth_config
-        else:
-            for key, value in expected_assertions.items():
-                assert f"'{key}': '{value}'" in body
+            # The flag is always present for oidc-generic; without the setting it is false.
+            assert auth_config["localFallback"] is False
 
 
 async def test_is_database_auth_functional(monkeypatch):
@@ -355,7 +351,9 @@ async def test_config_js_jwt_local_fallback(server_config, monkeypatch):
     monkeypatch.setattr(ui, "_is_database_auth_functional", is_functional)
 
     content = await ui.build_config_js_content()
-    assert "'localFallback': true" in content
+    auth_config = json.loads(content.split("window.auth = ")[1].split(";\n")[0])
+    assert auth_config["method"] == "jwt"
+    assert auth_config["localFallback"] is True
 
 
 async def test_config_js_no_local_fallback_when_setting_off(server_config, monkeypatch):
@@ -371,4 +369,5 @@ async def test_config_js_no_local_fallback_when_setting_off(server_config, monke
     monkeypatch.setattr(ui, "_is_database_auth_functional", fail)
 
     content = await ui.build_config_js_content()
-    assert "'localFallback': false" in content
+    auth_config = json.loads(content.split("window.auth = ")[1].split(";\n")[0])
+    assert auth_config["localFallback"] is False
