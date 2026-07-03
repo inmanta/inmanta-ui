@@ -279,6 +279,96 @@ async def test_oidc_config(inmanta_ui_config, oidc_config, expected_assertions, 
             auth_config = json.loads(auth_json)
             for key, value in expected_assertions.items():
                 assert auth_config[key] == value
+            # Without the setting, no local fallback is advertised.
+            assert "localFallback" not in auth_config
         else:
             for key, value in expected_assertions.items():
                 assert f"'{key}': '{value}'" in body
+
+
+async def test_is_database_auth_functional(monkeypatch):
+    """
+    Database auth is only functional (and thus a usable fallback) when a signing config
+    exists and at least one database user is present.
+    """
+    from inmanta import data
+    from inmanta.protocol.auth import auth
+    from inmanta_ui import ui
+
+    # No signing config -> not functional, no DB query needed.
+    monkeypatch.setattr(auth.AuthJWTConfig, "get_sign_config", lambda: None)
+    assert await ui._is_database_auth_functional() is False
+
+    # Signing config present but no users -> not functional.
+    monkeypatch.setattr(auth.AuthJWTConfig, "get_sign_config", lambda: object())
+
+    async def no_users(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(data.User, "get_list", no_users)
+    assert await ui._is_database_auth_functional() is False
+
+    # Signing config present and a user exists -> functional.
+    async def one_user(*args, **kwargs):
+        return [object()]
+
+    monkeypatch.setattr(data.User, "get_list", one_user)
+    assert await ui._is_database_auth_functional() is True
+
+
+@pytest.mark.parametrize("functional", [True, False])
+async def test_config_js_oidc_local_fallback(server_config, monkeypatch, functional):
+    """
+    When the oidc_local_fallback setting is on, config.js advertises localFallback for the
+    generic OIDC provider, reflecting whether database auth is functional.
+    """
+    from inmanta_ui import ui
+
+    config.Config.set("server", "auth", "True")
+    config.Config.set("server", "auth_method", "oidc")
+    config.Config.set("web-ui", "oidc_authority", "https://idp.example.com/")
+    config.Config.set("web-ui", "oidc_client_id", "cid")
+    config.Config.set("web-ui", "oidc_local_fallback", "True")
+
+    async def is_functional():
+        return functional
+
+    monkeypatch.setattr(ui, "_is_database_auth_functional", is_functional)
+
+    content = await ui.build_config_js_content()
+    auth_config = json.loads(content.split("window.auth = ")[1].split(";\n")[0])
+    assert auth_config["method"] == "oidc-generic"
+    assert auth_config["localFallback"] is functional
+
+
+async def test_config_js_jwt_local_fallback(server_config, monkeypatch):
+    """The jwt auth method also advertises the localFallback flag."""
+    from inmanta_ui import ui
+
+    config.Config.set("server", "auth", "True")
+    config.Config.set("server", "auth_method", "jwt")
+    config.Config.set("web-ui", "oidc_local_fallback", "True")
+
+    async def is_functional():
+        return True
+
+    monkeypatch.setattr(ui, "_is_database_auth_functional", is_functional)
+
+    content = await ui.build_config_js_content()
+    assert "'localFallback': true" in content
+
+
+async def test_config_js_no_local_fallback_when_setting_off(server_config, monkeypatch):
+    """Without the setting, the DB is not queried and no fallback is advertised (jwt)."""
+    from inmanta_ui import ui
+
+    config.Config.set("server", "auth", "True")
+    config.Config.set("server", "auth_method", "jwt")
+
+    async def fail():
+        raise AssertionError("database should not be queried when the setting is off")
+
+    monkeypatch.setattr(ui, "_is_database_auth_functional", fail)
+
+    content = await ui.build_config_js_content()
+    assert "'localFallback': false" in content
