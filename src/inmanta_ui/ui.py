@@ -115,7 +115,7 @@ async def build_config_js_content() -> str:
         }
     else:
         raise Exception(
-            f"Invalid value for config option server.auth_method: {auth_method}. " "Expected 'oidc', 'database' or 'jwt'."
+            f"Invalid value for config option server.auth_method: {auth_method}. Expected 'oidc', 'database' or 'jwt'."
         )
 
     return f"\nwindow.auth = {json.dumps(auth_config)};\n" + features
