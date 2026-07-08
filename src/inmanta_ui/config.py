@@ -74,9 +74,9 @@ oidc_local_fallback = Option(
     "web-ui",
     "oidc_local_fallback",
     False,
-    "Offer a database (break-glass) login in the web-console when the identity provider is unavailable. "
-    "Only takes effect for the oidc and jwt auth methods, and only when database auth is actually usable "
-    "(a signing config and at least one database user exist). Provision the break-glass user with the "
-    "inmanta-initial-user-setup tool.",
+    "Offer a fallback to the database authentication method (a break-glass login) in the web-console when the "
+    "identity provider is unavailable. Only takes effect for the oidc and jwt auth methods, and only when the "
+    "database authentication method is usable (a signing config and at least one database user exist). Provision "
+    "the break-glass user with the inmanta-initial-user-setup tool.",
     is_bool,
 )

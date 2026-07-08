@@ -28,8 +28,11 @@ import os.path
 import pytest
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
+from inmanta import data
+from inmanta.protocol.auth import auth
 from inmanta.server import config
 from inmanta.server.bootloader import InmantaBootloader
+from inmanta_ui import ui
 
 logger = logging.getLogger(__name__)
 
@@ -287,10 +290,6 @@ async def test_is_database_auth_functional(monkeypatch):
     Database auth is only functional (and thus a usable fallback) when a signing config
     exists and at least one database user is present.
     """
-    from inmanta import data
-    from inmanta.protocol.auth import auth
-    from inmanta_ui import ui
-
     # No signing config -> not functional, no DB query needed.
     monkeypatch.setattr(auth.AuthJWTConfig, "get_sign_config", lambda: None)
     assert await ui._is_database_auth_functional() is False
@@ -318,7 +317,6 @@ async def test_config_js_oidc_local_fallback(server_config, monkeypatch, functio
     When the oidc_local_fallback setting is on, config.js advertises localFallback for the
     generic OIDC provider, reflecting whether database auth is functional.
     """
-    from inmanta_ui import ui
 
     config.Config.set("server", "auth", "True")
     config.Config.set("server", "auth_method", "oidc")
@@ -339,7 +337,6 @@ async def test_config_js_oidc_local_fallback(server_config, monkeypatch, functio
 
 async def test_config_js_jwt_local_fallback(server_config, monkeypatch):
     """The jwt auth method also advertises the localFallback flag."""
-    from inmanta_ui import ui
 
     config.Config.set("server", "auth", "True")
     config.Config.set("server", "auth_method", "jwt")
@@ -358,7 +355,6 @@ async def test_config_js_jwt_local_fallback(server_config, monkeypatch):
 
 async def test_config_js_no_local_fallback_when_setting_off(server_config, monkeypatch):
     """Without the setting, the DB is not queried and no fallback is advertised (jwt)."""
-    from inmanta_ui import ui
 
     config.Config.set("server", "auth", "True")
     config.Config.set("server", "auth_method", "jwt")
