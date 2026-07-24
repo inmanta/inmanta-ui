@@ -1,0 +1,5 @@
+description: The config.js served to the web-console now advertises a fallback to the database authentication method (localFallback) for the oidc and jwt auth methods. It is only enabled when the new web-ui.oidc_local_fallback option is set and the database authentication method is actually usable (a signing config and at least one database user exist).
+change-type: minor
+destination-branches: [master, iso9]
+sections:
+  feature: "{{description}}"
