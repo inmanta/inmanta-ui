@@ -23,7 +23,8 @@ from typing import cast
 
 from tornado import routing, web
 
-from inmanta.protocol.rest.server import StaticContentHandler
+from inmanta import data
+from inmanta.protocol.auth import auth
 from inmanta.server import SLICE_SERVER, SLICE_TRANSPORT
 from inmanta.server import config as opt
 from inmanta.server import extensions, protocol
@@ -35,6 +36,7 @@ from .config import (
     oidc_auth_url,
     oidc_authority,
     oidc_client_id,
+    oidc_local_fallback,
     oidc_realm,
     oidc_scope,
     web_console_enabled,
@@ -50,6 +52,86 @@ composer = extensions.BoolFeature(
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+async def _is_database_auth_functional() -> bool:
+    """
+    Return True iff a database login can actually be used: a signing config exists to mint
+    the login token, and at least one database user exists to log in as. Used to decide
+    whether to advertise the web-console local login fallback.
+    """
+    if auth.AuthJWTConfig.get_sign_config() is None:
+        return False
+    try:
+        users = await data.User.get_list()
+    except Exception:
+        LOGGER.warning(
+            "Could not determine whether database auth is functional for the local login fallback.",
+            exc_info=True,
+        )
+        return False
+    return len(users) > 0
+
+
+async def build_config_js_content() -> str:
+    """
+    Build the content of the config.js file served to the web-console. Computed per request
+    (config.js is never cached) so the local login fallback flag reflects the live state of
+    database auth.
+    """
+    features = f"\nexport const features = {json.dumps(web_console_features.get())};\n"
+    if not opt.server_enable_auth.get():
+        return features
+
+    auth_method: str = opt.server_auth_method.get()
+    provider = opt.authorization_provider.get()
+    # Whether to advertise the database login fallback: enabled by config and actually usable.
+    # The DB check is only run when the setting is on (short-circuit).
+    local_fallback = oidc_local_fallback.get() and await _is_database_auth_functional()
+
+    if auth_method == "database":
+        auth_config: dict[str, object] = {"method": "database", "provider": provider}
+    elif auth_method == "jwt":
+        auth_config = {"method": "jwt", "provider": provider, "localFallback": local_fallback}
+    elif auth_method == "oidc" and oidc_authority.get():
+        # Generic OIDC mode: oidc-client-ts with authorization code flow + PKCE.
+        auth_config = {
+            "method": "oidc-generic",
+            "authority": oidc_authority.get(),
+            "clientId": oidc_client_id.get(),
+            "provider": provider,
+            "localFallback": local_fallback,
+        }
+        if oidc_scope.get():
+            auth_config["scope"] = oidc_scope.get()
+    elif auth_method == "oidc":
+        # Legacy Keycloak mode: keycloak-js implicit flow. No local login fallback.
+        auth_config = {
+            "method": "oidc",
+            "realm": oidc_realm.get(),
+            "url": oidc_auth_url.get(),
+            "clientId": oidc_client_id.get(),
+            "provider": provider,
+        }
+    else:
+        raise Exception(
+            f"Invalid value for config option server.auth_method: {auth_method}. Expected 'oidc', 'database' or 'jwt'."
+        )
+
+    return f"\nwindow.auth = {json.dumps(auth_config)};\n" + features
+
+
+class ConfigJsHandler(web.RequestHandler):
+    """
+    Serves the web-console config.js. The content is generated per request and never cached
+    so the local login fallback flag reflects the live state of database auth.
+    """
+
+    async def get(self, *args: str, **kwargs: str) -> None:
+        self.set_header("Content-Type", "application/javascript")
+        self.set_header("Cache-Control", "no-cache")
+        self.write(await build_config_js_content())
+        self.set_status(200)
 
 
 class UISlice(ServerSlice):
@@ -97,54 +179,6 @@ class UISlice(ServerSlice):
             raise Exception(f"The web-ui.console_path config option references the non-existing directory {path}.")
         LOGGER.info("Serving the web-console from %s", path)
 
-        config_js_content = ""
-        if opt.server_enable_auth.get():
-            server_auth_method: str = opt.server_auth_method.get()
-            if server_auth_method == "oidc":
-                authority = oidc_authority.get()
-                if authority:
-                    # Generic OIDC mode: uses oidc-client-ts with authorization
-                    # code flow + PKCE. Works with any OIDC-compliant IdP.
-                    auth_config: dict[str, str] = {
-                        "method": "oidc-generic",
-                        "authority": authority,
-                        "clientId": oidc_client_id.get(),
-                        "provider": opt.authorization_provider.get(),
-                    }
-                    scope = oidc_scope.get()
-                    if scope:
-                        auth_config["scope"] = scope
-                    config_js_content = f"\nwindow.auth = {json.dumps(auth_config)};\n"
-                else:
-                    # Legacy Keycloak mode: uses keycloak-js with implicit flow.
-                    config_js_content = f"""
-                    window.auth = {{
-                        'method': 'oidc',
-                        'realm': '{oidc_realm.get()}',
-                        'url': '{oidc_auth_url.get()}',
-                        'clientId': '{oidc_client_id.get()}',
-                        'provider': '{opt.authorization_provider.get()}',
-                    }};\n"""
-            elif server_auth_method == "database":
-                config_js_content = f"""
-                    window.auth = {{
-                        'method': 'database',
-                        'provider': '{opt.authorization_provider.get()}',
-                    }};\n"""
-            elif server_auth_method == "jwt":
-                config_js_content = f"""
-                    window.auth = {{
-                        'method': 'jwt',
-                        'provider': '{opt.authorization_provider.get()}',
-                    }};\n"""
-            else:
-                raise Exception(
-                    f"Invalid value for config option server.auth_method: {opt.server_auth_method.get()}. "
-                    "Expected either 'oidc' or 'database'."
-                )
-
-        config_js_content += f"\nexport const features = {json.dumps(web_console_features.get())};\n"
-
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
         server._handlers.append(
@@ -154,16 +188,12 @@ class UISlice(ServerSlice):
                 options,
             )
         )
+        # config.js is generated per request (and never cached) so that the local login
+        # fallback flag reflects the live state of database auth, see ConfigJsHandler.
         server._handlers.append(
             routing.Rule(
                 routing.PathMatches(r"/console/(.*/)*config.js$"),
-                StaticContentHandler,
-                {
-                    "transport": server,
-                    "content": config_js_content,
-                    "content_type": "application/javascript",
-                    "set_no_cache_header": True,
-                },
+                ConfigJsHandler,
             )
         )
         server._handlers.append(
