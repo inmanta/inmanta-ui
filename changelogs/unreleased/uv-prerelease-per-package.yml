@@ -1,0 +1,7 @@
+change-type: patch
+description: Allow prereleases per package via the tool.uv section in pyproject.toml instead of passing --prerelease to uv
+destination-branches:
+- master
+- iso9
+- iso8
+sections: {}
