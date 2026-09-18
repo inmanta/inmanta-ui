@@ -181,13 +181,6 @@ class UISlice(ServerSlice):
 
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
-        server._handlers.append(
-            routing.Rule(
-                routing.PathMatches(r"/console/(version\.json)"),
-                FlatFileHandler,
-                options,
-            )
-        )
         # config.js is generated per request (and never cached) so that the local login
         # fallback flag reflects the live state of database auth, see ConfigJsHandler.
         server._handlers.append(

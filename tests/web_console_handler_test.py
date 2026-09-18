@@ -119,12 +119,12 @@ async def test_web_console_config(server, inmanta_ui_config):
 
 async def test_caching(server, inmanta_ui_config, web_console_path: str):
     """
-    Verify that requests for files like version.json, config.js and index.html
+    Verify that requests for files like config.js, index.html and static assets
     set the response header that stops the browser from caching the file.
     """
 
     # Ensure the required files exist in the root of the web-console folder.
-    for file in ["version.json", "config.js", "something.css", "something.js"]:
+    for file in ["config.js", "something.css", "something.js"]:
         path = os.path.join(web_console_path, file)
         with open(path, "w") as fh:
             fh.write("test")
@@ -145,7 +145,6 @@ async def test_caching(server, inmanta_ui_config, web_console_path: str):
         "/console/",
         "/console/index.html",
         "/console/something/else",
-        "/console/version.json",
         "/console/config.js",
         "/console/something/else/config.js",
         "/console/something.css",
