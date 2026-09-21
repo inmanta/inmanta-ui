@@ -225,6 +225,7 @@ class FileHandlerWithCacheControl(web.StaticFileHandler):
         path: str,
         default_filename: str | None = None,
         allowed_symlink_directory: str | list[str] | None = None,
+        *,
         set_no_cache_header: bool = True,
     ) -> None:
         """
