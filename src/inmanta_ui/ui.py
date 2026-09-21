@@ -220,11 +220,17 @@ class UISlice(ServerSlice):
 
 class FileHandlerWithCacheControl(web.StaticFileHandler):
 
-    def initialize(self, path: str, default_filename: str | None = None, set_no_cache_header: bool = True) -> None:
+    def initialize(
+        self,
+        path: str,
+        default_filename: str | None = None,
+        allowed_symlink_directory: str | list[str] | None = None,
+        set_no_cache_header: bool = True,
+    ) -> None:
         """
         :param set_no_cache_header: True iff the "Cache-Control: no-cache" header will be set.
         """
-        super().initialize(path=path, default_filename=default_filename)
+        super().initialize(path=path, default_filename=default_filename, allowed_symlink_directory=allowed_symlink_directory)
         self.set_no_cache_header = set_no_cache_header
 
     def set_extra_headers(self, path: str) -> None:

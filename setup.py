@@ -2,7 +2,9 @@ from setuptools import setup, find_packages
 
 requires = [
     "inmanta-core>=11.1.0",
-    "tornado~=6.0",
+    # 6.5.9 added the allowed_symlink_directory argument to StaticFileHandler.initialize(),
+    # 6.5.10 widened its type to str | list[str] | None
+    "tornado~=6.0,>=6.5.10",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
