@@ -1,0 +1,3 @@
+description: The web-console file handlers now accept and forward the allowed_symlink_directory argument that tornado 6.5.9 added to StaticFileHandler.initialize().
+change-type: patch
+destination-branches: [master, iso9]
