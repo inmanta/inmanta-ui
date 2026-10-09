@@ -1,10 +1,10 @@
 bumpversion==0.6.0
 inmanta-dev-dependencies==2.187.0
-tornado==6.5.7
+tornado==6.5.10
 
-# allow dev versions for extensions
+# allow dev versions for extensions (pip only, for uv use the `tool.uv` section in pyproject.toml)
 inmanta-support>=0.dev
 inmanta-license>=0.dev
 inmanta-lsm>=0.dev
-inmanta-ui>=6.1.1
+inmanta-ui>=6.2.0
 inmanta-core>=14.0.0

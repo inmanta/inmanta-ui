@@ -181,13 +181,6 @@ class UISlice(ServerSlice):
 
         location = "/console/"
         options = {"path": path, "default_filename": "index.html"}
-        server._handlers.append(
-            routing.Rule(
-                routing.PathMatches(r"/console/(version\.json)"),
-                FlatFileHandler,
-                options,
-            )
-        )
         # config.js is generated per request (and never cached) so that the local login
         # fallback flag reflects the live state of database auth, see ConfigJsHandler.
         server._handlers.append(
@@ -227,11 +220,18 @@ class UISlice(ServerSlice):
 
 class FileHandlerWithCacheControl(web.StaticFileHandler):
 
-    def initialize(self, path: str, default_filename: str | None = None, set_no_cache_header: bool = True) -> None:
+    def initialize(
+        self,
+        path: str,
+        default_filename: str | None = None,
+        allowed_symlink_directory: str | list[str] | None = None,
+        *,
+        set_no_cache_header: bool = True,
+    ) -> None:
         """
         :param set_no_cache_header: True iff the "Cache-Control: no-cache" header will be set.
         """
-        super().initialize(path=path, default_filename=default_filename)
+        super().initialize(path=path, default_filename=default_filename, allowed_symlink_directory=allowed_symlink_directory)
         self.set_no_cache_header = set_no_cache_header
 
     def set_extra_headers(self, path: str) -> None:

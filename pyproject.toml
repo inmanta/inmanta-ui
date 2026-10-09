@@ -23,3 +23,7 @@ public = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 log_format = "%(asctime)s.%(msecs)03d %(levelname)s %(message)s"
+
+[tool.uv]
+required-version = ">=0.12.1"
+prerelease-package = { inmanta-core = "allow", inmanta-license = "allow", inmanta-lsm = "allow", inmanta-support = "allow", pytest-inmanta-extensions = "allow" }
