@@ -15,7 +15,7 @@ mypy_baseline = $(PYTHON) -m mypy_baseline
 ifdef PIP_INDEX
 pip_index_arg := -i $(PIP_INDEX)
 endif
-uv_args = pip install --python $(PYTHON) --prerelease if-necessary-or-explicit $(pip_index_arg)
+uv_args = pip install --python $(PYTHON) $(pip_index_arg)
 ifeq ($(shell which uv),)
 bootstrap_pip_install = $(PYTHON) -m pip install $(pip_index_arg)
 else
