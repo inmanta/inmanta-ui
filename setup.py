@@ -2,13 +2,15 @@ from setuptools import setup, find_packages
 
 requires = [
     "inmanta-core>=11.1.0",
-    "tornado~=6.0",
+    # 6.5.9 added the allowed_symlink_directory argument to StaticFileHandler.initialize(),
+    # 6.5.10 widened its type to str | list[str] | None
+    "tornado~=6.0,>=6.5.10",
 ]
 
 namespace_packages = ["inmanta_ext.ui"]
 
 setup(
-    version="6.2.0",
+    version="6.2.1",
     python_requires=">=3.11",  # also update classifiers
     # Meta data
     name="inmanta-ui",
